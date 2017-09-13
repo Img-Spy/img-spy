@@ -1,0 +1,56 @@
+import * as React from "react";
+import { Component }    from "react";
+
+interface DirectoryPickerProps {
+    name: string;
+    label: string;
+}
+
+interface DirectoryPickerState {
+    selectedFile: File;
+}
+
+export class DirectoryPicker extends Component<DirectoryPickerProps, DirectoryPickerState> {
+
+    public componentDidMount() {
+        const fileInput: any = this.refs.fileInput;
+        fileInput.directory = true;
+        fileInput.webkitdirectory = true;
+    }
+
+    public onDirectoryChange(e) {
+        const fileList: FileList = (this.refs.fileInput as any).files;
+        if (fileList.length === 0) {
+            return;
+        }
+
+        this.setState({
+            selectedFile: fileList.item(0)
+        });
+    }
+
+    public get selectedFileName(): string {
+        if (this.state) {
+            const file: any = this.state.selectedFile;
+            return file.path;
+        }
+        return "";
+    }
+
+    public render() {
+        return (
+            <div className="directory-picker">
+                <input id={this.props.name} name={this.props.name} type="file" ref="fileInput" onChange={(e) => this.onDirectoryChange(e)}/>
+                <label htmlFor={this.props.name}>
+                    <span title={this.selectedFileName}>{this.selectedFileName}</span>
+                    <strong>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
+                            <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path>
+                        </svg>
+                        {this.props.label}
+                    </strong>
+                </label>
+            </div>
+        );
+    }
+}

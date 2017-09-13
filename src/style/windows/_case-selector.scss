@@ -1,0 +1,25 @@
+
+@mixin spy-window-case-selector-theme($theme) {
+
+$palette: theme-palette($theme);
+
+body.img-spy-case-selector {
+    background: palette-800($palette);
+
+    button {
+        margin-top: 5px;
+        width: 100%;
+        border: none;
+        padding: 6px 3px;
+
+        font-size: 1.25rem;
+        font-weight: bold;
+
+        background-color: palette-600($palette);
+        color: theme-foreground($theme);
+
+        cursor: pointer;
+    }
+}
+
+}

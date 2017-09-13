@@ -1,0 +1,119 @@
+
+@mixin goldenlayout-theme($theme)  {
+    $palette: theme-palette($theme);
+
+    .lm_goldenlayout {
+        background: theme-background($theme);
+    }
+
+    .lm_content {
+        background: palette-800($palette);
+    }
+
+    .lm_dragProxy {
+
+        .lm_content {
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+        }
+    }
+
+    .lm_dropTargetIndicator {
+        box-shadow: inset 0 0 30px theme-background($theme);
+        outline: 1px dashed palette-300($palette);
+        transition: all 200ms ease;
+        
+        .lm_inner {
+            background: theme-background($theme);
+            opacity: .2;
+        }
+    }
+
+    .lm_splitter {
+        background: theme-background($theme);
+        opacity: .001;
+        transition: opacity 200ms ease;
+    }
+
+    .lm_splitter:hover,.lm_splitter.lm_dragging {
+        background: palette-600($palette);
+        opacity:1
+    }
+
+    .lm_header {
+        height: 20px;
+        user-select: none;
+        
+        &.lm_selectable { cursor: pointer }
+
+        .lm_tab {
+            font-family: Arial,sans-serif;
+            font-size: 12px;
+            color: palette-400($palette);
+            background: palette-900($palette);
+            box-shadow: 2px -2px 2px rgba(0,0,0,0.3);
+            margin-right: 2px;
+            padding-bottom: 2px;
+            padding-top: 2px;
+
+            .lm_close_tab {
+                width: 11px;
+                height: 11px;
+                background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAATElEQVR4nG3OwQ0DMQwDwZGRBtR/j1YJzMc5+IDoR+yCVO29g+pu981MFgqZmRdAfU7+CYWcbF11LwALjpBL0N0qybNx/RPU+gOeiS/+XCRwDlTgkQAAAABJRU5ErkJggg==);
+                background-position: center center;
+                background-repeat: no-repeat;
+                top: 4px;
+                right: 6px;
+                opacity: .4;
+
+                &:hover { opacity: 1 }
+            }
+
+            &.lm_active {
+                border-bottom: none;
+                box-shadow: 0 -2px 2px theme-background($theme);
+                padding-bottom: 3px;
+
+                .lm_close_tab { opacity:1 }
+            }
+
+        }
+
+    }
+
+    .lm_popin {
+        cursor: pointer;
+ 
+        .lm_bg {
+            background: palette-50($palette);
+            opacity: .3
+        }
+
+        .lm_icon {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAJCAYAAADpeqZqAAAAWklEQVR4nJWOyw3AIAxDHcQC7L8jbwT3AlJBfNp3SiI7dtRaLSlKKeoA1oEsKSQZCEluexw8Tm3ohk+E7bnOUHUGcNh+HwbBygw4AZ7FN/Lt84p0l+yTflV8AKQyLdcCRJi/AAAAAElFTkSuQmCC);
+            background-position: center center;
+            background-repeat: no-repeat;
+            border-left: 1px solid palette-100($palette);
+            border-top:1px solid palette-100($palette);
+            opacity: .7;
+        }
+
+        &:hover .lm_icon { opacity: 1; }
+    }
+
+    .lm_dragProxy.lm_bottom .lm_header .lm_tab,
+    .lm_stack.lm_bottom .lm_header .lm_tab { box-shadow:2px 2px 2px rgba(0,0,0,0.3) }
+    .lm_dragProxy.lm_bottom .lm_header .lm_tab.lm_active,
+    .lm_stack.lm_bottom .lm_header .lm_tab.lm_active { box-shadow:0 2px 2px theme-background($theme) }
+
+    .lm_selected .lm_header { background-color: palette-700($palette) }
+    .lm_tab:hover,.lm_tab.lm_active { background: palette-800($palette); color: palette-200($palette) }
+    .lm_header .lm_controls .lm_tabdropdown:before { color: theme-foreground($theme) }
+    .lm_controls>li { position:relative;background-position:center center;background-repeat:no-repeat;opacity:.4;transition:opacity 300ms ease }
+    .lm_controls>li:hover { opacity:1 }
+    .lm_controls .lm_popout { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAPklEQVR4nI2Q0QoAIAwCNfr/X7aXCpGN8snBdgejJOzckpkxs9jR6K6T5JpU0nWl5pSXTk7qwh8SnNT+CAAWCgkKFpuSWsUAAAAASUVORK5CYII=) }
+    .lm_controls .lm_maximise { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKElEQVR4nGP8////fwYCgImQAgYGBgYWKM2IR81/okwajIpgvsMbVgAwgQYRVakEKQAAAABJRU5ErkJggg==) }
+    .lm_controls .lm_close { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAQUlEQVR4nHXOQQ4AMAgCQeT/f6aXpsGK3jSTuCVJAAr7iBdoAwCKd0nwfaAdHbYERw5b44+E8JoBjEYGMBq5gAYP3usUDu2IvoUAAAAASUVORK5CYII=) }
+    .lm_maximised .lm_header { background-color: theme-background($theme) }
+    .lm_maximised .lm_controls .lm_maximise { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJ0lEQVR4nGP8//8/AzGAiShVI1YhCwMDA8OsWbPwBmZaWhoj0SYCAN1lBxMAX4n0AAAAAElFTkSuQmCC) }
+    .lm_transition_indicator { background-color: theme-background($theme); border:1px dashed palette-500($palette) }
+}

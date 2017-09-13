@@ -1,0 +1,6 @@
+// @import '../../node_modules/jqwidgets-framework/jqwidgets/styles/jqx.dark.css';
+@import 'core';
+
+// $dark-theme: theme($goldenlayout-dark, white, black);
+$dark-theme: theme($goldenlayout-dark, white, black, $green);
+@include spy-theme($dark-theme);

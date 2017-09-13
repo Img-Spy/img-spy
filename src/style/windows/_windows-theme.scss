@@ -1,0 +1,9 @@
+@import 'case';
+@import 'case-selector';
+@import 'settings';
+
+@mixin spy-windows-theme($theme) {
+    @include spy-window-case-theme($theme);
+    @include spy-window-case-selector-theme($theme);
+    @include spy-window-settings-theme($theme);
+}

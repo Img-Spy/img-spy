@@ -1,0 +1,75 @@
+
+@mixin spy-window-settings-theme($theme) {
+
+/* Init variables */
+$palette: theme-palette($theme);
+
+/* Main */
+body.img-spy-settings {
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background-color: palette-800($palette);
+    color: palette-100($palette);
+
+    .settings {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+
+        table.table {
+
+            thead td {
+                background-color: palette-400($palette);
+            }            
+
+            td {
+                padding: 5px 10px 5px 5px;
+                cursor: default;
+                background-color: palette-100($palette);
+                color: palette-800($palette);
+            }
+        }
+
+        .settings-tab {
+            height: auto;
+            width: 100%;
+            padding: 10px 20px;
+
+
+            .header h1 {
+                margin-top: 1px;
+                border-bottom: 1px palette-100($palette) solid;
+            }
+        }
+
+        div.settings-content {
+            display: flex;
+            flex: 1 1 auto;
+            overflow: hidden;
+
+            > .router {
+                width: 100%;
+                height: auto;
+            }
+
+            textarea.description {
+                min-height: 169px;
+            }
+        }
+
+        div.settings-keypad {
+            display: flex;
+            padding: 0px 20px;
+            height: 50px;
+            border-top: 1px palette-400($palette) solid;
+            transform: translateY(-1px);
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+    }
+}
+
+}

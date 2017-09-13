@@ -1,0 +1,153 @@
+
+
+@function palette-50($palette) {
+    @return map-get($palette, '50');
+}
+@function palette-100($palette) {
+    @return map-get($palette, '100');
+}
+@function palette-200($palette) {
+    @return map-get($palette, '200');
+}
+@function palette-300($palette) {
+    @return map-get($palette, '300');
+}
+@function palette-400($palette) {
+    @return map-get($palette, '400');
+}
+@function palette-500($palette) {
+    @return map-get($palette, '500');
+}
+@function palette-600($palette) {
+    @return map-get($palette, '600');
+}
+@function palette-700($palette) {
+    @return map-get($palette, '700');
+}
+@function palette-800($palette) {
+    @return map-get($palette, '800');
+}
+@function palette-900($palette) {
+    @return map-get($palette, '900');
+}
+
+@function palette-A100($palette) {
+    @return map-get($palette, 'A100');
+}
+@function palette-A200($palette) {
+    @return map-get($palette, 'A200');
+}
+@function palette-A400($palette) {
+    @return map-get($palette, 'A400');
+}
+@function palette-A700($palette) {
+    @return map-get($palette, 'A700');
+}
+
+// FROM https://material.io/guidelines/style/color.html#color-color-palette
+
+$grey: (
+    '50':  #FAFAFA,
+    '100': #F5F5F5,
+    '200': #EEEEEE,
+    '300': #E0E0E0,
+    '400': #BDBDBD,
+    '500': #9E9E9E,
+    '600': #757575,
+    '700': #616161,
+    '800': #424242,
+    '900': #212121
+);
+
+$goldenlayout-dark: (
+    '50':  #FFFFFF,
+    '100': #EEEEEE,
+    '200': #DDDDDD,
+    '300': #CCCCCC,
+    '400': #999999,
+    '500': #555555,
+    '600': #444444,
+    '700': #333333,
+    '800': #222222,
+    '900': #111111
+);
+
+$indigo: (
+    '50':  #E8EAF6,
+    '100': #C5CAE9,
+    '200': #9FA8DA,
+    '300': #7986CB,
+    '400': #5C6BC0,
+    '500': #3F51B5,
+    '600': #3949AB,
+    '700': #303F9F,
+    '800': #283593,
+    '900': #1A237E,
+
+    'A100': #8C9EFF,
+    'A200': #536DFE,
+    'A400': #3D5AFE,
+    'A700': #304FFE
+);
+
+$green: (
+    '50':  #E8F5E9,
+    '100': #C8E6C9,
+    '200': #A5D6A7,
+    '300': #81C784,
+    '400': #66BB6A,
+    '500': #4CAF50,
+    '600': #43A047,
+    '700': #388E3C,
+    '800': #2E7D32,
+    '900': #1B5E20,
+
+    'A100': #B9F6CA,
+    'A200': #69F0AE,
+    'A400': #00E676,
+    'A700': #00C853
+);
+
+$teal: (
+    '50':  #E0F2F1,
+    '100': #B2DFDB,
+    '200': #80CBC4,
+    '300': #4DB6AC,
+    '400': #26A69A,
+    '500': #009688,
+    '600': #00897B,
+    '700': #00796B,
+    '800': #00695C,
+    '900': #004D40,
+
+    'A100': #A7FFEB,
+    'A200': #64FFDA,
+    'A400': #1DE9B6,
+    'A700': #00BFA5
+);
+
+$goldenlayout-dark2: (
+    '50':  #FFFFFF,
+    '100': #EEEEEE,
+    '200': #DDDDDD,
+    '300': #CCCCCC,
+    '400': #999999,
+    '500': #555555,
+    '600': #444444,
+    '700': #452500,
+    '800': #222222,
+    '900': #111111
+);
+
+$goldenlayout-light: (
+    '50':  #000000,
+    '100': #222222,
+    '200': #444444,
+    '300': #555555,
+    '400': #888888,
+    '500': #555555,
+    '600': #BBBBBB,
+    '700': #DDDDDD,
+    '800': #E1E1E1,
+    '900': #FAFAFA
+);

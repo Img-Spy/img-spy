@@ -1,0 +1,12 @@
+@import 'theme/index';
+@import 'base/base-theme';
+@import 'windows/windows-theme';
+@import 'golden-layout/goldenlayout-theme';
+
+@mixin spy-theme($theme) {
+
+    @include spy-base-theme($theme);
+    @include spy-windows-theme($theme);
+    @include goldenlayout-theme($theme); 
+
+}

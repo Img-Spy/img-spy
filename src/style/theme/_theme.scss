@@ -1,0 +1,33 @@
+
+
+@function theme($palette, $foreground, $background, $primary: $palette, $warn: $palette) {
+    $theme: (
+        "palette": $palette,
+        "primary": $primary,
+        "warn": $warn,
+        "foreground": $foreground,
+        "background": $background
+    );
+    @return $theme;
+}
+
+
+@function theme-foreground($theme) {
+    @return map-get($theme, 'foreground');
+}
+
+@function theme-background($theme) {
+    @return map-get($theme, 'background');
+}
+
+@function theme-palette($theme) {
+    @return map-get($theme, 'palette');
+}
+
+@function theme-primary($theme) {
+    @return map-get($theme, 'primary');
+}
+
+@function theme-warn($theme) {
+    @return map-get($theme, 'warn');
+}

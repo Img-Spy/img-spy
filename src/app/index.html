@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>ImgSpy</title>
+    <link type="text/css" rel="stylesheet" href="../style/base.css"/>
+
+    <link rel='stylesheet' type='text/css' href='../lib/font-awesome/css/font-awesome.css'/>
+
+    <link rel='stylesheet' type='text/css' href='../../node_modules/@phosphor/dragdrop/style/index.css'/>
+    <link rel='stylesheet' type='text/css' href='../../node_modules/@phosphor/widgets/style/index.css'/>
+    <!-- <link rel='stylesheet' type='text/css' href='../lib/phosphor/index.css'/> -->
+
+    <script>
+      require("app-module-path").addPath(__dirname + "/..");
+      require("rxjs");
+    </script>
+    <script>
+      // Requirements for golden-layout 
+      window.$ = window.jQuery = require('jquery');
+      window.React = require('react');
+      window.ReactDOM = require('react-dom');
+
+      // Requirements for jqx
+
+      // Dockspawn
+      // require("lib/dockspawn/dockspawn");
+    </script>
+    <!-- <script src='../lib/jQuery-contextMenu/src/jquery.contextMenu.js'></script>
+    <script src='../lib/jQuery-contextMenu/src/jquery.ui.position.js'></script>
+    <script src="../lib/webcabin-docker/Build/wcDocker.min.js"></script> -->
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- Load scripts -->
+    <script>
+    </script>
+    <script>
+      // You can also require other files to run in this process
+      require('./renderer');
+    </script>
+
+  </body>
+</html>

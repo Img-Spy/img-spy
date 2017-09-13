@@ -1,0 +1,2 @@
+sudo mount -o ro,loop,offset=28672 /home/frg/Cases/FirstCase/Computer1/hdd-001.dd partition1/
+sudo parted ../../Computer1/hdd-001.dd unit s print
