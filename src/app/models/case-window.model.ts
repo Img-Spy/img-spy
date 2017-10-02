@@ -1,9 +1,14 @@
 import { Widget } from "@phosphor/widgets";
 
 
+export interface FileSelector {
+    path: string;
+    address: string;
+}
+
 export interface CaseWindowModel {
-    selectedFile: string;
-    activeFile: string;
+    selectedFile: FileSelector;
+    activeFile: FileSelector;
 
     openPanels: {
         [id: string]: DockPanelModel

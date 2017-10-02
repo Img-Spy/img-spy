@@ -3,6 +3,7 @@ import { handleActions,
 import * as deepcopy            from "deepcopy";
 
 import { CaseWindowModel,
+         FileSelector,
          DockPanelModel }       from "app/models";
 import { actions }              from "app/constants";
 
@@ -10,17 +11,17 @@ import { actions }              from "app/constants";
 export default () => {
     const initialState: CaseWindowModel = {
         selectedFile: undefined,
-        activeFile: "",
+        activeFile: { path: "", address: "fisical" },
 
         openPanels: {}
     };
-    return handleActions<CaseWindowModel, string | DockPanelModel>({
+    return handleActions<CaseWindowModel, FileSelector | DockPanelModel | string>({
             [actions.CASE_SELECT_FILE]:
-                (state: CaseWindowModel, action: Action<string>): CaseWindowModel =>
+                (state: CaseWindowModel, action: Action<FileSelector>): CaseWindowModel =>
                     ({ ...state, selectedFile: action.payload }),
 
             [actions.CASE_ACTIVATE_FILE]:
-                (state: CaseWindowModel, action: Action<string>): CaseWindowModel =>
+                (state: CaseWindowModel, action: Action<FileSelector>): CaseWindowModel =>
                     ({ ...state, activeFile: action.payload }),
 
             [actions.CASE_OPEN_PANEL]:

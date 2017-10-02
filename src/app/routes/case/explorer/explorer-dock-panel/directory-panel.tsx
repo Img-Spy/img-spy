@@ -1,16 +1,21 @@
 import * as React               from "react";
 
-import { FstDirectory }         from "app/models";
+import { getFstChildren,
+         getSortedChildren,
+         FstRoot,
+         FstDirectory }         from "app/models";
 import { FixedTable }           from "app/components";
 
 
 interface DirectoryPanel {
-    item?: FstDirectory;
+    item: FstDirectory;
+    fstRoot: FstRoot;
 }
 
 
 export const DirectoryPanel = (props: DirectoryPanel): JSX.Element => {
-    const { item } = props;
+    const { item, fstRoot } = props;
+    const children = getFstChildren(fstRoot, item);
 
     return (
         <div className="directory-panel">
@@ -20,7 +25,7 @@ export const DirectoryPanel = (props: DirectoryPanel): JSX.Element => {
                 <FixedTable.Cell>Type</FixedTable.Cell>
             </FixedTable.Header>
             <FixedTable.Body>
-                { Object.keys(item.children).map((fileName, i) =>
+                { getSortedChildren(children).map((fileName, i) =>
                     <FixedTable.Row key={i} clickable={true}
                                     onClick={() => this.props.actions.activateFile(item.children[fileName].path)}>
                         <FixedTable.Cell>{item.children[fileName].name}</FixedTable.Cell>

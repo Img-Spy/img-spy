@@ -9,6 +9,7 @@ import { combineEpics,
 import { actions }                  from "app/constants";
 import { api }                      from "app/api";
 import { EpicObservable,
+         FileSelector,
          getFstItem,
          FstItem,
          ImgSpyState }              from "app/models";
@@ -17,15 +18,18 @@ import { applySettings,
          fstAdd }                   from "app/actions";
 
 
-const updateActiveFstItemForm = (action$: EpicObservable<string>, store) =>
+const updateActiveFstItemForm = (action$: EpicObservable<FileSelector>, store) =>
     action$.ofType(actions.CASE_ACTIVATE_FILE)
         .map((action) => {
-            const path = action.payload,
+            const selector = action.payload,
                   state: ImgSpyState = store.getState();
 
-            return getFstItem(state.fstRoot, path);
+            return getFstItem(state.fstRoot, selector.path, selector.address);
         })
-        .map((fstItem) => formActions.change("fstItem", fstItem));
+        .map((fstItem) => {
+            const { parent, children, ...formFstItem } = fstItem as any;
+            return formActions.change("fstItem", formFstItem);
+        });
 
 
 const saveFstItemFormChanges = (action$: ActionsObservable<ModelAction>, store) =>
@@ -40,9 +44,10 @@ const saveFstItemFormChanges = (action$: ActionsObservable<ModelAction>, store) 
         });
 
 
-const openActivePath = (action$: EpicObservable<string>, store) =>
+const openActivePath = (action$: EpicObservable<FileSelector>, store) =>
     action$.ofType(actions.CASE_ACTIVATE_FILE)
-        .map(action => fstOpen(action.payload));
+        .filter(action => !!action.payload)
+        .map(action => fstOpen(action.payload.path, action.payload.address));
 
 export default () =>
     (combineEpics as Function)(

@@ -22,7 +22,7 @@ import { fstAdd,
          fstUnlink }            from "app/actions";
 
 
-interface InputWindowEventProps { }
+interface InputWindowEventProps {}
 
 interface FstWatcherActions {
     // fstAddDir: (path: string, info: FstInfo) => void;
@@ -77,10 +77,12 @@ export class FstWatcherClass extends React.Component<FstWatcherProps, undefined>
         this.watcher.on("addDir",    (dirPath: string, info) => {
             const   name = path.basename(dirPath ? dirPath : folder),
                     dir: FstDirectory = {
+                        name,
+                        path: `${dirPath}`,
+                        address: "fisical",
+
                         type: "directory",
-                        path: dirPath,
                         isOpen: !dirPath,
-                        name
                     };
 
             actions.fstAdd(dir);
@@ -88,9 +90,11 @@ export class FstWatcherClass extends React.Component<FstWatcherProps, undefined>
         this.watcher.on("add",       (filePath: string, info) => {
             const   name = path.basename(filePath),
                     item = {
+                        path: `${filePath}`,
+                        name,
+                        address: "fisical",
+
                         type: getFstType(filePath),
-                        path: filePath,
-                        name
                     };
 
             actions.fstAdd(item as FstItem);

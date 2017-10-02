@@ -1,4 +1,5 @@
 import { FstDirectory,
+         FstRoot,
          FstItem }              from "./fst-watcher.model";
 import { RouterData,
          RouteData }            from "./route-data.model";
@@ -22,7 +23,7 @@ export interface ImgSpyState {
 
     terminal: TerminalModel;
 
-    fstRoot: FstDirectory;
+    fstRoot: FstRoot;
     fstItem: FstItem;
     caseWindow: CaseWindowModel;
 }

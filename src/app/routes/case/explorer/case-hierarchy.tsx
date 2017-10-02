@@ -7,8 +7,13 @@ import { connect,
          MapStateToProps }      from "react-redux";
 
 import { ImgSpyState,
+         FileSelector,
          getFstItem,
          getSortedChildren,
+         getFstParent,
+         getFstChildren,
+         FstParent,
+         FstRoot,
          FstItem,
          FstDataSource,
          FstDirectory }         from "app/models";
@@ -24,15 +29,14 @@ interface InputCaseHierarchyProps {
 }
 
 interface CaseHierarchyActions {
-    fstToggleOpen: (path: string) => void;
-    selectFile: (path: string) => void;
-    activateFile: (path: string) => void;
+    fstToggleOpen: (item: FileSelector) => void;
+    selectFile: (item?: FileSelector) => void;
+    activateFile: (item?: FileSelector) => void;
 }
 
 interface CaseHierarchyProps {
-    fstRoot?: FstDirectory;
+    fstRoot?: FstRoot;
     selectedItem?: FstItem;
-    prevItem?: FstDirectory | FstDataSource;
 
     actions?: CaseHierarchyActions;
 }
@@ -41,24 +45,12 @@ const mapStateToProps: MapStateToProps<CaseHierarchyProps, InputCaseHierarchyPro
     (state: ImgSpyState, props) => {
         const { fstRoot } = state;
         const { selectedFile } = state.caseWindow;
-        let selectedItem, prevItem;
+        let selectedItem;
         if (selectedFile !== undefined) {
-            selectedItem = getFstItem(fstRoot, selectedFile);
-
-            const splittedPath = selectedFile.split("/");
-            if (!selectedFile) {
-                prevItem = undefined;
-            } else if (splittedPath.length > 1) {
-                const prevPath = splittedPath
-                    .slice(0, splittedPath.length - 1)
-                    .join("/");
-                prevItem = getFstItem(fstRoot, prevPath);
-            } else {
-                prevItem = fstRoot;
-            }
+            selectedItem = getFstItem(fstRoot, selectedFile.path, selectedFile.address);
         }
 
-        const mapProps: CaseHierarchyProps = { fstRoot, selectedItem, prevItem };
+        const mapProps: CaseHierarchyProps = { fstRoot, selectedItem };
 
         return mapProps as any;
     };
@@ -85,33 +77,39 @@ export class CaseHierarchyClass extends React.Component<CaseHierarchyProps, unde
     }
 
     public onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-        const { selectedItem: item, prevItem} = this.props;
+        const { selectedItem: item, fstRoot } = this.props;
         const { selectFile, activateFile, fstToggleOpen } = this.props.actions;
+        const itemChildren = getFstChildren(fstRoot, item);
+        let parent = getFstParent(fstRoot, item);
+        let parentChildren;
+        if (parent) {
+            parentChildren = getFstChildren(fstRoot, parent);
+        }
 
         switch (event.keyCode) {
             case 37: // Left
             if (item.type === "directory" || item.type === "dataSource") {
                 if (item.isOpen) {
-                    fstToggleOpen(item.path);
+                    fstToggleOpen(item);
                     return;
-                } else {
-                    selectFile(prevItem.path);
+                } else if (parent) {
+                    selectFile(parent);
                     return;
                 }
             }
             return;
 
             case 38: // Up
-            if (prevItem) {
-                const children = getSortedChildren(prevItem);
+            if (parent) {
+                const children = getSortedChildren(parentChildren);
                 const index = children.indexOf(item.name);
                 if (index === 0) {
-                    selectFile(prevItem.path);
+                    selectFile(parent);
                     return;
                 }
 
-                const openPath = getOpenPath(prevItem, children, index - 1);
-                selectFile(openPath);
+                const openItem = getOpenPath(parent, children, index - 1);
+                selectFile(openItem);
                 return;
             }
             return;
@@ -119,13 +117,12 @@ export class CaseHierarchyClass extends React.Component<CaseHierarchyProps, unde
             case 39: // Right
             if (item.type === "directory" || item.type === "dataSource") {
                 if (!item.isOpen) {
-                    fstToggleOpen(item.path);
+                    fstToggleOpen(item);
                     return;
                 } else {
-                    const children = getSortedChildren(item);
+                    const children = getSortedChildren(itemChildren);
                     if (children.length) {
-                        const nextPath = item.children[children[0]].path;
-                        selectFile(nextPath);
+                        selectFile(itemChildren[children[0]]);
                         return;
                     }
                 }
@@ -135,50 +132,58 @@ export class CaseHierarchyClass extends React.Component<CaseHierarchyProps, unde
 
             case 40: // Down
             if ((item.type === "directory" || item.type === "dataSource") &&
-                 item.isOpen && item.children && Object.keys(item.children).length) {
-                const children = getSortedChildren(item);
-                selectFile(item.children[children[0]].path);
+                 item.isOpen && itemChildren && Object.keys(itemChildren).length) {
+                const children = getSortedChildren(itemChildren);
+                selectFile(itemChildren[children[0]]);
                 return;
             }
 
-            if (prevItem) {
-                const prevChildren = getSortedChildren(prevItem);
-                const index = prevChildren.indexOf(item.name);
-                if (index === prevChildren.length - 1) {
+            if (parent) {
+                let currItem = item;
+                while (parent) {
+                    const prevChildren = getSortedChildren(parentChildren);
+                    const index = prevChildren.indexOf(currItem.name);
+                    if (index === prevChildren.length - 1) {
+                        currItem = parent as any;
+                        parent = getFstParent(fstRoot, currItem) as FstDirectory;
+                        parentChildren = getFstChildren(fstRoot, parent);
+                        continue;
+                    }
+
+                    selectFile(parent.children[prevChildren[index + 1]]);
                     return;
                 }
-
-                selectFile(prevItem.children[prevChildren[index + 1]].path);
                 return;
             }
             return;
 
             case 13: // Enter
-            activateFile(item.path);
+            activateFile(item);
             return;
 
         }
 
         ///////
 
-        function getOpenPath(prevItem: FstDirectory | FstDataSource,
+        function getOpenPath(prevItem: FstParent,
                                  children: Array<string>,
-                                 index: number): string {
-
-            const prevChild = prevItem.children[children[index]];
+                                 index: number): FstItem {
+            const prevItemChildren = getFstChildren(fstRoot, prevItem as FstItem);
+            const prevChild = prevItemChildren[children[index]];
             if (prevChild.type === "directory" || prevChild.type === "dataSource") {
                 if (!prevChild.isOpen) {
-                    return prevChild.path;
+                    return prevChild;
                 }
 
-                const childChildren = getSortedChildren(prevChild);
-                if (childChildren.length === 0) {
-                    return prevChild.path;
+                const childChildren = getFstChildren(fstRoot, prevChild);
+                const sortedChildren = getSortedChildren(childChildren);
+                if (sortedChildren.length === 0) {
+                    return prevChild;
                 }
 
-                return getOpenPath(prevChild, childChildren, childChildren.length - 1);
+                return getOpenPath(prevChild, sortedChildren, sortedChildren.length - 1);
             }
-            return prevChild.path;
+            return prevChild;
         }
     }
 
@@ -205,7 +210,7 @@ export class CaseHierarchyClass extends React.Component<CaseHierarchyProps, unde
                     Case structure
                 </div>
                 <div className="body margin x-scroll flex-auto">
-                    <CaseHierarchyItem item={this.props.fstRoot} root={true}/>
+                    <CaseHierarchyItem item={this.props.fstRoot.children.fisical} root={true}/>
                 </div>
             </div>
         );

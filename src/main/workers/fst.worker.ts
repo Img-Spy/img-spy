@@ -1,76 +1,78 @@
-import { ImgSpyWorker } from "./img-spy-worker";
+import { AnalysisInfo }     from "main/models";
+import { ImgFile }          from "tsk-js";
+
+import { ImgSpyWorker }     from "./img-spy-worker";
 
 
-interface HashQueueItem {
-    path: string;
-    cb: (hash: string) => void;
-}
+export type FstWorkerMessage =
+    AnalyzeImgMessage | AnalyzeImgCallbackMessage |
+    ListImgMessage    | ListImgCallbackMessage;
 
-export type FstWorkerMessage = CalculateHashMessage | ReturnHashMessage;
 
-export interface CalculateHashMessage {
-    type: "calculateHash";
+
+
+export interface AnalyzeImgMessage {
+    type: "analyzeImg";
     content: {
         path: string;
     };
 }
 
-export interface ReturnHashMessage {
-    type: "returnHash";
+
+export interface AnalyzeImgCallbackMessage {
+    type: "analyzeImgCallback";
+    content: AnalysisInfo;
+}
+
+
+export interface ListImgMessage {
+    type: "listImg";
     content: {
         path: string;
-        hash: string;
+        offset: number;
+        inode: number;
     };
 }
+
+
+export interface ListImgCallbackMessage {
+    type: "listImgCallback";
+    content: Array<ImgFile>;
+}
+
 
 export class FstWorker extends ImgSpyWorker<FstWorkerMessage> {
-    private pendingHashes: Array<HashQueueItem>;
-    private currentHash: HashQueueItem;
-
-    constructor() {
-        super();
-        this.pendingHashes = [];
-    }
 
     public get childProcessFile() {
         return "fst.childprocess.js";
     }
 
-    public calculateHash(path: string, cb: (hash: string) => void) {
-        const queueItem = { path, cb };
-        if (this.currentHash) {
-            this.pendingHashes.push(queueItem);
-        } else {
-            const message: CalculateHashMessage = {
-                type: "calculateHash",
-                content: { path }
-            };
-
-            this.currentHash = queueItem;
-            this.send(message);
-        }
+    public analyzeImage(path: string, cb: (hash: AnalysisInfo) => void) {
+        const message: FstWorkerMessage = {
+            type: "analyzeImg",
+            content: { path }
+        };
+        this.queueMessage(message, cb);
     }
 
-    protected onMessageRetrieved(message: FstWorkerMessage) {
+    public listImage(path: string, offset: number, inode: number,
+                     cb: (hash: Array<ImgFile>) => void) {
+        const message: FstWorkerMessage = {
+            type: "listImg",
+            content: { path, offset, inode }
+        };
+        this.queueMessage(message, cb);
+    }
+
+    protected onMessageRetrieved(message: FstWorkerMessage, cb: Function) {
         switch (message.type) {
-            case "returnHash":
-                this.onHashRetrieved(message);
+            case "analyzeImgCallback":
+                cb(message.content);
                 break;
-        }
-    }
 
-    protected onHashRetrieved(message: ReturnHashMessage) {
-        this.currentHash.cb(message.content.hash);
-        this.currentHash = this.pendingHashes.shift();
-
-        if (this.currentHash) {
-            const path = this.currentHash.path;
-            const message: CalculateHashMessage = {
-                type: "calculateHash",
-                content: { path }
-            };
-
-            this.send(message);
+            case "listImgCallback":
+                cb(message.content);
+                break;
         }
     }
 }

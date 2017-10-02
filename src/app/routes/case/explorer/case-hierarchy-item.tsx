@@ -6,13 +6,19 @@ import { connect,
          MapDispatchToProps }   from "react-redux";
 
 import { ImgSpyState,
+         FileSelector,
          DockPanelModel,
          getSortedChildren,
+         getMountPoint,
+         getFstChildren,
+         isFstSelected,
          FstItem,
          FstFile,
+         FstRoot,
          FstDataSource,
          FstDirectory }         from "app/models";
 import { fstToggleOpen,
+         fstList,
          openDockPanel,
          activateFile,
          selectFile }           from "app/actions";
@@ -24,18 +30,18 @@ interface InputCaseHierarchyItemProps {
 }
 
 interface CaseHierarchyItemActions {
-    fstToggleOpen: (path: string) => void;
-    selectFile: (path: string) => void;
-    activateFile: (path: string) => void;
+    fstToggleOpen: (selector: FileSelector) => void;
+    fstList: (dir: FstDirectory) => void;
+    selectFile: (item?: FstItem) => void;
+    activateFile: (item?: FstItem) => void;
     openDockPanel: (panel: DockPanelModel) => void;
 }
 
 interface CaseHierarchyItemProps {
     item?: FstItem;
-    selectedFile?: string;
-    activeFile?: string;
-    root?: boolean;
-    mount?: FstDirectory;
+    selectedFile?: FileSelector;
+    activeFile?: FileSelector;
+    fstRoot?: FstRoot;
 
     actions?: CaseHierarchyItemActions;
 }
@@ -43,8 +49,8 @@ interface CaseHierarchyItemProps {
 const mapStateToProps: MapStateToProps<CaseHierarchyItemProps, InputCaseHierarchyItemProps> =
     (state: ImgSpyState, props) => {
         const { selectedFile, activeFile } = state.caseWindow;
-        const mount = state.fstRoot.children[".mount"] as FstDirectory;
-        const mapProps: CaseHierarchyItemProps = { selectedFile, activeFile, mount };
+        const { fstRoot } = state;
+        const mapProps: CaseHierarchyItemProps = { selectedFile, activeFile, fstRoot };
 
         return mapProps as any;
     };
@@ -53,6 +59,7 @@ const mapDispatchToProps: MapDispatchToProps<CaseHierarchyItemProps, InputCaseHi
     (dispatch, props) => {
         const actions: CaseHierarchyItemActions = {
             fstToggleOpen:  bindActionCreators(fstToggleOpen,   dispatch),
+            fstList:        bindActionCreators(fstList,         dispatch),
             selectFile:     bindActionCreators(selectFile,      dispatch),
             activateFile:   bindActionCreators(activateFile,    dispatch),
             openDockPanel:  bindActionCreators(openDockPanel,   dispatch),
@@ -64,20 +71,17 @@ const mapDispatchToProps: MapDispatchToProps<CaseHierarchyItemProps, InputCaseHi
 
 
 export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemProps, undefined> {
-    public static defaultProps = {
-        root: false
-    };
     private unselectFile = () => {
         if (this.props.selectedFile !== undefined) {
-            this.props.actions.selectFile(undefined);
+            this.props.actions.selectFile();
         }
     };
 
     private onClick(ev: React.MouseEvent<any>, item: FstItem) {
         ev.stopPropagation();
 
-        this.props.actions.selectFile(item.path);
-        this.props.actions.activateFile(item.path);
+        this.props.actions.selectFile(item);
+        this.props.actions.activateFile(item);
     }
 
     private onDoubleClick(ev: React.MouseEvent<any>, item: FstItem) {
@@ -97,7 +101,12 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
     }
 
     private onToogleState(ev: React.MouseEvent<any>, item: FstItem) {
-        this.props.actions.fstToggleOpen(item.path);
+        this.props.actions.fstToggleOpen(item);
+
+        if (item.address === "virtual" && item.type === "directory") {
+            const children = getFstChildren(this.props.fstRoot, item);
+            this.props.actions.fstList(item);
+        }
     }
 
     public componentWillMount() {
@@ -110,25 +119,13 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
 
     public get className(): string {
         return "case-hierarchy-item" +
-            (this.props.item.path === this.props.selectedFile ? " selected" : "") +
-            (this.props.item.path === this.props.activeFile   ? " active"   : "");
-    }
-
-    private isMounted(fstDataSource: FstDataSource): boolean {
-        return !!(
-            this.props.mount &&
-            fstDataSource.mountedIn &&
-            this.props.mount.children[fstDataSource.mountedIn]
-        );
-    }
-
-    private getMounted(fstDataSource: FstDataSource): FstDirectory {
-        return this.props.mount.children[fstDataSource.mountedIn] as FstDirectory;
+            (isFstSelected(this.props.item, this.props.selectedFile) ? " selected" : "") +
+            (isFstSelected(this.props.item, this.props.activeFile)   ? " active"   : "");
     }
 
     private StateIcon = (props: {item: FstItem}) =>
     (
-        props.item.type === "file" ?
+        props.item.type === "file" || props.item.canOpen === false  ?
             <span className="state-btn"></span> :
         props.item.type === "dataSource" ?
             <span onClick={(ev) => this.onToogleState(ev, props.item)} className={`state-btn fa ${
@@ -165,20 +162,17 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
 
     private ItemChildren = (props: {item: FstItem}) => {
         const { item } = props;
+        if (item.type === "file") {
+            return null;
+        }
+        const children = getFstChildren(this.props.fstRoot, item);
 
         return (
-            item.type === "directory" ?
-                <div key="children" className={"children" + (item.isOpen ? "" : " closed")}>
-                    { getSortedChildren(item).map((childName: string , i) =>
-                        <CaseHierarchyItem key={i} item={item.children[childName]}/>
-                    )}
-                </div> :
-            item.type === "dataSource" && this.isMounted(item) &&
-                <div key="children" className={"children" + (item.isOpen ? "" : " closed")}>
-                    { getSortedChildren(this.getMounted(item)).map((childName: string , i) =>
-                        <CaseHierarchyItem key={i} item={this.getMounted(item).children[childName]}/>
-                    )}
-                </div>
+            <div key="children" className={"children" + (item.isOpen ? "" : " closed")}>
+                { getSortedChildren(children).map((childName: string , i) =>
+                    <CaseHierarchyItem key={i} item={children[childName]}/>
+                )}
+            </div>
         );
     };
 

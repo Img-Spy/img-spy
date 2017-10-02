@@ -1,4 +1,5 @@
 import * as React           from "react";
+import * as path from 'path';
 import { connect,
          MapStateToProps }  from "react-redux";
 import { Form,
@@ -6,6 +7,7 @@ import { Form,
 
 import { ImgSpyState,
          getFstItem,
+         FstDataSource,
          FstItem }          from "app/models";
 
 
@@ -20,8 +22,13 @@ interface ExplorerPropertiesProps {
 const mapStateToProps: MapStateToProps<ExplorerPropertiesProps, InputExplorerPropertiesProps> =
     (state: ImgSpyState, props) => {
         const activePath = state.caseWindow.activeFile,
-              activeFstItem =
-                    (activePath !== undefined) ? getFstItem(state.fstRoot, activePath) : undefined;
+              activeFstItem = (activePath !== undefined) ?
+                    getFstItem(
+                        state.fstRoot,
+                        activePath.path,
+                        activePath.address
+                    ) : undefined;
+
         const mapProps: ExplorerPropertiesProps = { activeFstItem };
 
         return mapProps as any;
@@ -48,7 +55,7 @@ export class ExplorerPropertiesClass extends React.Component<ExplorerPropertiesP
                     Properties
                 </div>
                 <div className="body flex-auto flex column">
-                    {this.isDirectory ?  (
+                    {this.isDirectory ? (
                         <div></div>
                     ) : this.isFile ? (
                         <div></div>
@@ -61,6 +68,7 @@ export class ExplorerPropertiesClass extends React.Component<ExplorerPropertiesP
     }
 
     public renderDataSourceProperties(): JSX.Element {
+        const item = this.props.activeFstItem as FstDataSource;
         return (
             <Form className="editor-properties-form flex-auto" model="fstItem">
                 <table>
@@ -74,12 +82,17 @@ export class ExplorerPropertiesClass extends React.Component<ExplorerPropertiesP
                         <tr className="input-box">
                             <td><label>Type</label></td>
                             <td>
-                                <Control.select model=".imgType">
-                                    <option value="1">Disk</option>
-                                    <option value="2">Partition</option>
-                                </Control.select>
+                                <Control.text model=".imgType" disabled={true}/>
                             </td>
                         </tr>
+                        { item.imgType === "disk" &&
+                            <tr className="input-box">
+                                <td><label>Partitions</label></td>
+                                <td>
+                                    <Control.text model=".partitions.length" disabled={true}/>
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </Form>

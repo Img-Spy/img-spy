@@ -30,8 +30,12 @@ interface ActivePanelProps {
 
 const mapStateToProps: MapStateToProps<ActivePanelProps, InputActivePanelPanelProps> =
     (state: ImgSpyState, props) => {
-        const activeItemPath = state.caseWindow.activeFile;
-        const activeItem: FstItem = getFstItem(state.fstRoot, activeItemPath);
+        const activeItemSelector = state.caseWindow.activeFile;
+        const activeItem: FstItem = getFstItem(
+            state.fstRoot,
+            activeItemSelector.path,
+            activeItemSelector.address
+        );
         const mapProps: ActivePanelProps = { activeItem };
 
         return mapProps as any;
@@ -47,7 +51,7 @@ export class ActivePanelClass extends React.Component<ActivePanelProps, undefine
         }
 
         return (
-            <FstItemPanel path={activeItem.path}/>
+            <FstItemPanel path={activeItem.path} address={activeItem.address}/>
         );
     }
 }

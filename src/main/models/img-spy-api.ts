@@ -4,10 +4,13 @@ import { app,
          ipcMain }              from "electron";
 import * as fs                  from "fs";
 import * as path                from "path";
+import { ImgFile }              from "tsk-js";
+
 import { SettingsModel }        from "app/models";
 
 import { CONFIG }               from "main/config";
 import { ImgSpyWindowManager }  from "main/windows";
+import { AnalysisInfo }         from "main/models";
 import { FstWorker }            from "main/workers";
 
 import { WindowEvents,
@@ -40,9 +43,14 @@ export class ImgSpyApi {
         const settings = this.windowManager.openSettings();
     }
 
-    public calculateHash(path: string, cb: (hash: string) => void) {
-        this.fstWorker.calculateHash(`${this.windowManager.folder}/${path}`, cb);
+    public analyzeImage(path: string, cb: (hash: AnalysisInfo) => void) {
+        this.fstWorker.analyzeImage(`${this.windowManager.folder}/${path}`, cb);
     }
+
+    public listImage(path: string, offset: number, inode: number, cb: (hash: Array<ImgFile>) => void) {
+        this.fstWorker.listImage(`${this.windowManager.folder}/${path}`, offset, inode, cb);
+    }
+
 
     // Handle settings
     public loadSettingsSync(): SettingsModel {

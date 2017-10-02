@@ -1,4 +1,7 @@
-import { dataSourceTypes } from "app/constants";
+import { PartitionInfo }        from "tsk-js"
+
+import { dataSourceTypes }      from "app/constants";
+
 
 export type Theme = "dark" | "light";
 
@@ -16,7 +19,7 @@ export interface SettingsModel {
     theme: Theme;
 }
 
-export type DataSourceType = 1 | 2;
+export type DataSourceType = "disk" | "partition";
 type DataSourceFileAction = "move";
 
 export interface DataSource {
@@ -26,6 +29,7 @@ export interface DataSource {
 
     hash?: string;
     computedHash: string;
+    partitions: Array<PartitionInfo>;
 
     // file: string;
     // fileAction: DataSourceFileAction;

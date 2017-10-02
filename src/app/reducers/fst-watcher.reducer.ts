@@ -1,11 +1,13 @@
 import * as path                from "path";
-import * as fs                from "fs";
+import * as fs                  from "fs";
 import { handleActions,
          Action }               from "redux-actions";
 
 import { FstDirectory,
          FstItem,
+         FstRoot,
          FstDataSource,
+         FstAddPayload,
          FstHashPayload,
          DataSource,
          SettingsModel,
@@ -14,29 +16,57 @@ import { actions }              from "app/constants";
 
 
 export default (folder, settings: SettingsModel) => {
-    const initialState: FstDirectory = {
+    const initialFisical: FstDirectory = {
         name: path.basename(folder),
         type: "directory",
         path: "",
+        address: "fisical",
         isOpen: true,
         children: {}
     };
+
+    const initialState: FstRoot = {
+        name: "root",
+        type: "root",
+        children: {
+            fisical: initialFisical,
+            virtual: {
+                name: "Virtual",
+                type: "directory",
+                address: "virtual",
+                isOpen: false,
+                path: "",
+                children: {}
+            }
+        }
+    };
     Object.keys(settings.sources).forEach((path) => {
         const dataSource = settings.sources[path];
-        insertDataSource(initialState, dataSource);
+        insertDataSource(initialFisical, dataSource);
     });
 
-    return handleActions<FstDirectory, FstItem>({
+    return handleActions<FstRoot, FstAddPayload | FstUnlinkPayload | FstHashPayload>({
         [actions.FST_ADD]:
-            (state: FstDirectory, action: Action<FstItem>): FstDirectory => {
-                const newItem = action.payload;
+            (state: FstRoot, action: Action<FstAddPayload>): FstRoot => {
+                const { newItem } = action.payload;
+                let { address } = action.payload;
+                if (!address) {
+                    address = "fisical";
+                }
+
+                const rootDir = state.children[address];
                 if (newItem.path === "") {
+                    console.log(`Add file into root path.`);
                     if (newItem.type === "directory") {
                         return {
                             ...state,
-                            ...newItem,
                             children: {
-                                ...state.children, ...newItem.children
+                                ...state.children,
+                                [address]: {
+                                    ...rootDir,
+                                    ...newItem
+                                }
+
                             }
                         };
                     } else {
@@ -45,7 +75,7 @@ export default (folder, settings: SettingsModel) => {
                 }
 
                 console.log(`Add file into path: '${newItem.path}'`);
-                return updatePath(state, newItem.path, (name, prev) => {
+                const newRootDir = updatePath(rootDir, newItem.path, (name, prev) => {
                     const nextItem: FstItem = { ...prev, ...newItem };
                     if ((nextItem.type === "directory") && !nextItem.children) {
                         nextItem.children = {};
@@ -53,56 +83,117 @@ export default (folder, settings: SettingsModel) => {
 
                     return nextItem;
                 });
+
+                return {
+                    ...state,
+                    children: {
+                        ...state.children,
+                        [address]: newRootDir
+                    }
+                };
             },
 
         [actions.FST_HASH]:
-            (state: FstDirectory, action: Action<FstUnlinkPayload>): FstDirectory => {
+            (state: FstRoot, action: Action<FstUnlinkPayload>): FstRoot => {
                 const { path } = action.payload;
+                let { address } = action.payload;
+                if (!address) {
+                    address = "fisical";
+                }
+                const rootDir = state.children[address];
 
                 console.log(`Compute hash: '${path}'`);
-                return updatePath(state, path,
+                const newRootDir = updatePath(rootDir, path,
                     (name, prev: FstDataSource) => ({...prev, computingHash: true })
                 );
+
+                return {
+                    ...state,
+                    children: {
+                        ...state.children,
+                        [address]: newRootDir
+                    }
+                };
             },
 
         [actions.FST_UNLINK]:
-            (state: FstDirectory, action: Action<FstUnlinkPayload>): FstDirectory => {
+            (state: FstRoot, action: Action<FstUnlinkPayload>): FstRoot => {
                 const { path } = action.payload;
+                let { address } = action.payload;
+                if (!address) {
+                    address = "fisical";
+                }
+                const rootDir = state.children[address];
 
                 console.log(`Delete path: '${path}'`);
-                return deletePath(state, path);
+                const newRootDir = deletePath(rootDir, path);
+
+                return {
+                    ...state,
+                    children: {
+                        ...state.children,
+                        [address]: newRootDir
+                    }
+                };
             },
 
         [actions.FST_OPEN]:
-            (state: FstDirectory, action: Action<FstUnlinkPayload>): FstDirectory => {
+            (state: FstRoot, action: Action<FstUnlinkPayload>): FstRoot => {
                 const { path } = action.payload;
+                let { address } = action.payload;
+                if (!address) {
+                    address = "fisical";
+                }
+                const rootDir = state.children[address];
 
                 if (path === "") {
                     return state;
                 }
 
                 console.log(`Open path: '${path}'`);
-                return openPath(state, path);
+                const newRootDir = openPath(rootDir, path);
+
+                return {
+                    ...state,
+                    children: {
+                        ...state.children,
+                        [address]: newRootDir
+                    }
+                };
             },
 
         [actions.FST_TOGGLE_OPEN]:
-            (state: FstDirectory, action: Action<FstUnlinkPayload>): FstDirectory => {
+            (state: FstRoot, action: Action<FstUnlinkPayload>): FstRoot => {
                 const { path } = action.payload;
+                let { address } = action.payload;
+                if (!address) {
+                    address = "fisical";
+                }
+                const rootDir = state.children[address];
+                let newRootDir;
                 if (!path) {
-                    return {
-                        ...state,
-                        isOpen: !state.isOpen
+                    newRootDir = {
+                        ...rootDir,
+                        isOpen: !rootDir.isOpen
                     };
+                } else {
+                    console.log(`Toggle path: '${path}'`);
+                    newRootDir = updatePath(rootDir, path,
+                        (name, prev: FstDirectory | FstDataSource) =>
+                            ({
+                                ...prev,
+                                isOpen: !prev.isOpen
+                            })
+                    );
                 }
 
-                console.log(`Toggle path: '${path}'`);
-                return updatePath(state, path,
-                    (name, prev: FstDirectory | FstDataSource) =>
-                        ({
-                            ...prev,
-                            isOpen: !prev.isOpen
-                        })
-                );
+                return {
+                    ...state,
+                    children: {
+                        ...state.children,
+                        [address]: newRootDir
+                    }
+                };
             }
     }, initialState);
 };
@@ -112,7 +203,7 @@ export default (folder, settings: SettingsModel) => {
 
 type UpdatePathCallback = (name: string, prev: FstItem) => FstItem;
 function updatePath(rootDir: FstDirectory, path: string, buildCurrItem: UpdatePathCallback): FstDirectory {
-    const spath = path.split("/");
+    const spath =  path.split("/");
     return _updatePath();
 
     ///
@@ -124,7 +215,10 @@ function updatePath(rootDir: FstDirectory, path: string, buildCurrItem: UpdatePa
                 ...currDir,
                 children: {
                     ...currDir.children,
-                    [currName]: buildCurrItem(currName, currDir.children[currName])
+                    [currName]: {
+                        ...buildCurrItem(currName, currDir.children[currName]),
+                        parentPath: currDir.path
+                    }
                 }
             };
         }
@@ -216,6 +310,9 @@ function insertDataSource(rootDir: FstDirectory, dataSource: DataSource): void {
         if (spath.length - 1 === index) {
             const fstDataSource: FstDataSource = {
                 ...dataSource,
+
+                address: "fisical",
+                parentPath: currDir.path,
                 type: "dataSource"
             };
             delete fstDataSource.computingHash;
@@ -226,11 +323,13 @@ function insertDataSource(rootDir: FstDirectory, dataSource: DataSource): void {
         let nextDir = currDir.children[currName] as FstDirectory;
         if (!nextDir) {
             nextDir = {
-                type: "directory",
                 name: currName,
                 path: accPath,
-                isOpen: false,
+                address: "fisical",
+                parentPath: currDir.path,
 
+                type: "directory",
+                isOpen: false,
                 children: {}
             };
             currDir.children[currName] = nextDir;

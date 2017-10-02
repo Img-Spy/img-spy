@@ -17,6 +17,7 @@ import { BoxPanel,
          Widget }               from "@phosphor/widgets";
 
 import { ImgSpyState,
+         FileSelector,
          DockPanelModel }       from "app/models";
 import { openDockPanel,
          closeDockPanel }       from "app/actions";
@@ -40,7 +41,7 @@ interface ExplorerDockPanelProps {
     openPanels?: {
         [id: string]: DockPanelModel
     };
-    activeFile?: string;
+    activeFile?: FileSelector;
 
     actions?: ExplorerDockPanelActions;
 }
