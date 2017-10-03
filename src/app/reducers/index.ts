@@ -1,5 +1,6 @@
 import { combineReducers }      from "redux";
 import { createForms }          from "react-redux-form";
+import { handleActions }        from "redux-actions";
 
 import { api }                  from "app/api";
 import args                     from "app/args";
@@ -17,6 +18,7 @@ const reducersMap = {
     "case-selector": () =>  ({ navigate: navigateReducer() }),
     "case": () => {
         const initialSettings = api.loadSettingsSync();
+        const windowId = args["uuid"];
         const folder = args["folder"];
         return {
             navigate: navigateReducer(),
@@ -25,6 +27,8 @@ const reducersMap = {
             settings: settingsReducer(initialSettings),
             fstRoot: fstWatcherReducer(folder, initialSettings),
             caseWindow: caseWindowReducer(),
+            folder: handleActions<string, undefined>({}, folder),
+            windowId: handleActions<string, undefined>({}, windowId),
 
             /// Forms
             ...createForms({

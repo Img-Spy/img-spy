@@ -1,5 +1,6 @@
 import { app,
          BrowserWindow,
+         dialog,
          ipcRenderer,
          ipcMain }              from "electron";
 import * as fs                  from "fs";
@@ -47,10 +48,17 @@ export class ImgSpyApi {
         this.fstWorker.analyzeImage(`${this.windowManager.folder}/${path}`, cb);
     }
 
-    public listImage(path: string, offset: number, inode: number, cb: (hash: Array<ImgFile>) => void) {
+    public listImage(path: string, offset: number, inode: number, cb: (files: Array<ImgFile>) => void) {
         this.fstWorker.listImage(`${this.windowManager.folder}/${path}`, offset, inode, cb);
     }
 
+    public getContentImage(path: string, offset: number, inode: number, cb: (buffer: Buffer) => void) {
+        this.fstWorker.getContentImage(`${this.windowManager.folder}/${path}`, offset, inode, cb);
+    }
+
+    public saveDialog(options: Electron.SaveDialogOptions, cb: (filename: string) => void) {
+        dialog.showSaveDialog(options, cb);
+    }
 
     // Handle settings
     public loadSettingsSync(): SettingsModel {

@@ -56,7 +56,6 @@ export default (folder, settings: SettingsModel) => {
 
                 const rootDir = state.children[address];
                 if (newItem.path === "") {
-                    console.log(`Add file into root path.`);
                     if (newItem.type === "directory") {
                         return {
                             ...state,
@@ -74,7 +73,6 @@ export default (folder, settings: SettingsModel) => {
                     }
                 }
 
-                console.log(`Add file into path: '${newItem.path}'`);
                 const newRootDir = updatePath(rootDir, newItem.path, (name, prev) => {
                     const nextItem: FstItem = { ...prev, ...newItem };
                     if ((nextItem.type === "directory") && !nextItem.children) {
@@ -102,7 +100,6 @@ export default (folder, settings: SettingsModel) => {
                 }
                 const rootDir = state.children[address];
 
-                console.log(`Compute hash: '${path}'`);
                 const newRootDir = updatePath(rootDir, path,
                     (name, prev: FstDataSource) => ({...prev, computingHash: true })
                 );
@@ -125,7 +122,6 @@ export default (folder, settings: SettingsModel) => {
                 }
                 const rootDir = state.children[address];
 
-                console.log(`Delete path: '${path}'`);
                 const newRootDir = deletePath(rootDir, path);
 
                 return {
@@ -150,7 +146,6 @@ export default (folder, settings: SettingsModel) => {
                     return state;
                 }
 
-                console.log(`Open path: '${path}'`);
                 const newRootDir = openPath(rootDir, path);
 
                 return {
@@ -177,7 +172,6 @@ export default (folder, settings: SettingsModel) => {
                         isOpen: !rootDir.isOpen
                     };
                 } else {
-                    console.log(`Toggle path: '${path}'`);
                     newRootDir = updatePath(rootDir, path,
                         (name, prev: FstDirectory | FstDataSource) =>
                             ({

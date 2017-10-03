@@ -1,3 +1,4 @@
+import { remote }               from "electron";
 import * as React               from "react";
 import { bindActionCreators }   from "redux";
 import { Observable,

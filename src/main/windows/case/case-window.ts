@@ -1,3 +1,5 @@
+import { Menu,
+         MenuItem }         from "electron";
 import { ImgSpyWindow }     from "../img-spy-window";
 import { IMG_SCAN_MENU }    from "./menu";
 
@@ -20,5 +22,18 @@ export class CaseWindow extends ImgSpyWindow<CaseWindowArgs> {
         this.args = { folder };
 
         this.setMenu(IMG_SCAN_MENU);
+    }
+
+    protected buildContextMenu() {
+        // const menu = new Menu();
+        // menu.append(new MenuItem({
+        //     label: "Export",
+        //     click: (a, b, c) => {
+        //         console.log(a, b, c);
+        //     }
+        // }));
+        // this.webContents.on("context-menu", () => {
+
+        // });
     }
 }

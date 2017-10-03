@@ -1,4 +1,6 @@
-import { Observable }               from "rxjs";
+import * as fs                      from "fs";
+import { Observable,
+         Observer }                 from "rxjs";
 import { Action }                   from "redux-actions";
 import { actions as formActions }   from "react-redux-form";
 import { combineEpics }             from "redux-observable";
@@ -7,14 +9,17 @@ import { ImgFile }                  from "tsk-js";
 import { AnalysisInfo }             from "main/models";
 
 import { actions }                  from "app/constants";
-import { ApiObservable }            from "app/api";
 import { EpicObservable,
          ActionObservable,
+         ApiObservable,
+         FstObservable,
          ActionObserver,
          FstItem,
+         FstFile,
          FstAddPayload,
          FstUnlinkPayload,
          FstHashPayload,
+         FstExportPayload,
          getFstType,
          getFstItem,
          getMountPoint,
@@ -24,11 +29,14 @@ import { EpicObservable,
          DataSource,
          ImgSpyState }              from "app/models";
 import { fstAdd,
+         fstContent,
          fstHash,
+         fstExport,
          deleteSource,
          updateSource,
          applySettings,
          pushTerminalLine }         from "app/actions";
+
 
 
 const dataSourceChange$ =
@@ -137,27 +145,41 @@ const virtualListEpic = (action$: EpicObservable<FstDirectory>, store) =>
                 })
                 .map(files => ({ path, offset, imgPath, files }) );
         })
-        .flatMap(acc => acc.files
-            .map(file => {
-                const item: any = {
-                    path: `${acc.path}/${file.name}`,
-                    name: file.name,
+        .flatMap(acc => {
+            const actions = [];
 
-                    address: "virtual",
-                    imgPath: acc.imgPath,
-                    offset: acc.offset,
-                    inode: file.inode,
+            if (acc.files) {
+                acc.files.forEach(file => {
+                    const item: any = {
+                        path: `${acc.path}/${file.name}`,
+                        name: file.name,
 
-                    type: file.type === "directory" ? "directory" : "file"
-                };
+                        address: "virtual",
+                        imgPath: acc.imgPath,
+                        offset: acc.offset,
+                        inode: file.inode,
+                        deleted: !file.allocated,
 
-                if (item.type === "directory") {
-                    item.children = {};
-                }
+                        type: file.type === "directory" ? "directory" : "file"
+                    };
 
-                return fstAdd(item, "virtual");
-            })
-        );
+                    if (item.type === "directory") {
+                        item.children = {};
+                    }
+
+                    actions.push(fstAdd(item, "virtual"));
+                });
+            }
+
+            actions.push(fstAdd({
+                path: acc.path,
+                address: "virtual",
+                loaded: true
+            } as any, "virtual"));
+
+            return actions;
+        });
+
 
 const copySourceIntoSettingsEpic = (action$: EpicObservable<FstAddPayload>, store) =>
     dataSourceChange$(action$, store)
@@ -177,6 +199,54 @@ const copySourceIntoSettingsEpic = (action$: EpicObservable<FstAddPayload>, stor
         );
 
 
+const exportFileEpic = (action$: EpicObservable<FstExportPayload>, store) =>
+    action$.ofType(actions.FST_EXPORT)
+        .mergeMap(action => {
+            const state: ImgSpyState = store.getState();
+            const { file: selector, path } = action.payload;
+            const file = getFstItem(
+                state.fstRoot,
+                selector.path,
+                selector.address
+            ) as FstFile;
+            let newAction$;
+
+            if (!file.content) {
+                newAction$ = Observable.from([
+                    fstContent(file),
+                    fstExport(selector, path)
+                ]);
+            } else {
+                newAction$ = FstObservable
+                    .writeFile(file, path)
+                    .mapTo(
+                        pushTerminalLine({
+                            level: "notice",
+                            text: `Exported file '${file.name}'`
+                        })
+                    );
+            }
+
+            return newAction$;
+        });
+
+
+const getContentEpic = (action$: EpicObservable<FstFile>, store) =>
+    action$.ofType(actions.FST_CONTENT)
+        .mergeMap(action => {
+            const state: ImgSpyState = store.getState();
+            return FstObservable.getContent(state.folder, action.payload);
+        })
+        .map((payload) => fstAdd({
+                path: payload.file.path,
+                address: payload.file.address,
+                type: payload.file.type,
+
+                content: payload.content
+            }, payload.file.address)
+        );
+
+
 const removeFileEpic = (action$: EpicObservable<FstUnlinkPayload>, store) =>
     action$.ofType(actions.FST_UNLINK)
         .filter((action) => {
@@ -191,6 +261,8 @@ export default () =>
     (combineEpics as any)(
         launchCalcHashEpic,
         removeFileEpic,
+        exportFileEpic,
+        getContentEpic,
         virtualMountEpic,
         virtualListEpic,
         calcHashEpic,

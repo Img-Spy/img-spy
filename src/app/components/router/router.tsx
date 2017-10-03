@@ -18,7 +18,7 @@ import { createNavigator,
 import { RouteProps }           from "./route";
 
 
-interface InputRouterProps {
+interface InputRouterProps extends React.HTMLAttributes<HTMLDivElement> {
     name: string;
     defaultRoute?: string;
 }
@@ -27,25 +27,25 @@ interface RouterActions<T> {
     navigate: Navigator<T>;
 }
 
-interface RouterProps<T> {
+interface RouterMapProps<T> {
     path: string;
-    name?: string;
-    defaultRoute?: string;
 
     actions?: RouterActions<T>;
 }
 
-const mapStateToProps: MapStateToProps<RouterProps<any>, InputRouterProps> =
+type RouterProps<T> = InputRouterProps & RouterMapProps<T>;
+
+const mapStateToProps: MapStateToProps<RouterMapProps<any>, InputRouterProps> =
     (state: ImgSpyState, props: InputRouterProps) => {
         const router = getRouter(state, props.name),
               path = router ? router.path : undefined,
-              cState: RouterProps<any> = { path };
+              cState: RouterMapProps<any> = { path };
 
         return cState as any;
 
     };
 
-const mapDispachToProps: MapDispatchToProps<RouterProps<any>, InputRouterProps> =
+const mapDispachToProps: MapDispatchToProps<RouterMapProps<any>, InputRouterProps> =
     (dispatch, props) => {
         const actions: RouterActions<any> = {
             navigate: bindActionCreators(createNavigator(props.name), dispatch)
@@ -57,20 +57,34 @@ const mapDispachToProps: MapDispatchToProps<RouterProps<any>, InputRouterProps> 
 export class RouterClass<T> extends Component<RouterProps<T>, undefined> {
 
     public componentWillMount() {
+        this.checkDefaultRoute();
+    }
+
+    public componentDidUpdate() {
+        this.checkDefaultRoute();
+    }
+
+    private checkDefaultRoute() {
         if (this.props.path === undefined && this.props.defaultRoute) {
             this.props.actions.navigate(this.props.defaultRoute);
         }
     }
 
     public render() {
-        const children = [];
+        const activeChildren = [];
+        const { className, name, path, actions, defaultRoute, children, ...divProps } = this.props;
         React.Children.forEach(this.props.children, (ch: React.ReactElement<RouteProps>) => {
             if (ch.props.path === this.props.path) {
-                children.push(ch);
+                activeChildren.push(ch);
                 return false;
             }
         });
-        return <div className={`router router-${this.props.path}`}>{children}</div>;
+
+        return (
+            <div {...divProps} className={`router router-${this.props.path} ${className ? className : ""}`}>
+                {activeChildren}
+            </div>
+        );
     }
 }
 

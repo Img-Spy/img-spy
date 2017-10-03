@@ -4,8 +4,8 @@ import { actions as formActions }   from "react-redux-form";
 import { combineEpics }             from "redux-observable";
 
 import { actions }                  from "app/constants";
-import { ApiObservable }            from "app/api";
 import { EpicObservable,
+         ApiObservable,
          ActionObservable,
          ActionObserver,
          DataSource,

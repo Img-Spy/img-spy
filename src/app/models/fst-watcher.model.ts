@@ -8,8 +8,14 @@ import { DataSourceType }   from "./settings.model";
 
 export interface FstInfo {
     parentPath?: string;
+    deleted?: boolean;
+    loaded?: boolean;
+    name?: string;
+    content?: Buffer;
+    imgPath?: string;
+    offset?: number;
+    inode?: number;
 
-    name: string;
     path: string;
     address: string;
 }
@@ -39,10 +45,6 @@ export interface FstDataSource extends FstParent {
 
 export interface FstDirectory extends FstParent  {
     type: "directory";
-
-    imgPath?: string;
-    offset?: number;
-    inode?: number;
 }
 
 export interface FstRoot {
@@ -69,6 +71,11 @@ export interface FstUnlinkPayload {
 export interface FstHashPayload {
     path: string;
     hash: string;
+}
+
+export interface FstExportPayload {
+    file: FileSelector;
+    path: string;
 }
 
 export  const hasFstItem = (fstRoot: FstRoot, path: string): boolean => {

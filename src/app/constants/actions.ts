@@ -36,6 +36,8 @@ export const FST_OPEN           = "FST_OPEN";
 export const FST_TOGGLE_OPEN    = "FST_TOGGLE_OPEN";
 export const FST_HASH           = "FST_HASH";
 export const FST_LIST           = "FST_LIST";
+export const FST_CONTENT        = "FST_CONTENT";
+export const FST_EXPORT         = "FST_EXPORT";
 
 // Resize actions
 export const RSZ_UPDATE         = "RSZ_UPDATE";

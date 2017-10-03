@@ -1,9 +1,3 @@
-import { ActionsObservable }    from "redux-observable";
-import { Observable,
-         Observer }             from "rxjs";
-import { Action }               from "redux-actions";
-
-
 export { ImgSpyState }          from "./img-spy-state.model";
 export { RouteData,
          RouterData,
@@ -34,6 +28,7 @@ export { getFstItem,
          FstDataSource,
          FstUnlinkPayload,
          FstAddPayload,
+         FstExportPayload,
          FstHashPayload }       from "./fst-watcher.model";
 export { CaseWindowModel,
          FileSelector,
@@ -47,8 +42,10 @@ export { ResizeModel,
          ResizePayload,
          ResizeDirection,
          ResizeModelMap }       from "./resize.model";
+export { FstObservable,
+         EpicObservable,
+         ActionObservable,
+         ActionObserver,
+         ApiObservable }        from "./observable.model";
+export { TabModel }             from "./tabs.model";
 
-
-export type EpicObservable<T>   = ActionsObservable<Action<T>> & Observable<Action<T>>;
-export type ActionObservable<T> = Observable<Action<T>>;
-export type ActionObserver<T>   = Observer<Action<T>>;

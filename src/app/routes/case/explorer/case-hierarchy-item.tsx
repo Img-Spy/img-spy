@@ -1,3 +1,4 @@
+import { remote }               from "electron";
 import * as React               from "react";
 import * as uuidv1              from "uuid/v1";
 import { bindActionCreators }   from "redux";
@@ -19,6 +20,7 @@ import { ImgSpyState,
          FstDirectory }         from "app/models";
 import { fstToggleOpen,
          fstList,
+         fstExport,
          openDockPanel,
          activateFile,
          selectFile }           from "app/actions";
@@ -32,6 +34,8 @@ interface InputCaseHierarchyItemProps {
 interface CaseHierarchyItemActions {
     fstToggleOpen: (selector: FileSelector) => void;
     fstList: (dir: FstDirectory) => void;
+    fstExport: (file: FstFile, path: string) => void;
+
     selectFile: (item?: FstItem) => void;
     activateFile: (item?: FstItem) => void;
     openDockPanel: (panel: DockPanelModel) => void;
@@ -42,6 +46,7 @@ interface CaseHierarchyItemProps {
     selectedFile?: FileSelector;
     activeFile?: FileSelector;
     fstRoot?: FstRoot;
+    folder: string;
 
     actions?: CaseHierarchyItemActions;
 }
@@ -49,8 +54,8 @@ interface CaseHierarchyItemProps {
 const mapStateToProps: MapStateToProps<CaseHierarchyItemProps, InputCaseHierarchyItemProps> =
     (state: ImgSpyState, props) => {
         const { selectedFile, activeFile } = state.caseWindow;
-        const { fstRoot } = state;
-        const mapProps: CaseHierarchyItemProps = { selectedFile, activeFile, fstRoot };
+        const { fstRoot, folder } = state;
+        const mapProps: CaseHierarchyItemProps = { selectedFile, activeFile, fstRoot, folder };
 
         return mapProps as any;
     };
@@ -60,6 +65,8 @@ const mapDispatchToProps: MapDispatchToProps<CaseHierarchyItemProps, InputCaseHi
         const actions: CaseHierarchyItemActions = {
             fstToggleOpen:  bindActionCreators(fstToggleOpen,   dispatch),
             fstList:        bindActionCreators(fstList,         dispatch),
+            fstExport:      bindActionCreators(fstExport,       dispatch),
+
             selectFile:     bindActionCreators(selectFile,      dispatch),
             activateFile:   bindActionCreators(activateFile,    dispatch),
             openDockPanel:  bindActionCreators(openDockPanel,   dispatch),
@@ -68,15 +75,18 @@ const mapDispatchToProps: MapDispatchToProps<CaseHierarchyItemProps, InputCaseHi
         return { actions } as any;
     };
 
-
-
 export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemProps, undefined> {
-    private unselectFile = () => {
-        if (this.props.selectedFile !== undefined) {
-            this.props.actions.selectFile();
-        }
-    };
+    public menu: Electron.Menu;
+    public menuOpen: boolean;
 
+    constructor(props?: CaseHierarchyItemProps, context?: any) {
+        super(props, context);
+
+        this.onContextMenu = this.onContextMenu.bind(this);
+        this.unselectFile = this.unselectFile.bind(this);
+    }
+
+    // Events
     private onClick(ev: React.MouseEvent<any>, item: FstItem) {
         ev.stopPropagation();
 
@@ -103,13 +113,48 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
     private onToogleState(ev: React.MouseEvent<any>, item: FstItem) {
         this.props.actions.fstToggleOpen(item);
 
-        if (item.address === "virtual" && item.type === "directory") {
-            const children = getFstChildren(this.props.fstRoot, item);
+        if (item.address === "virtual" && item.type === "directory" &&
+                item.loaded === undefined) {
+
             this.props.actions.fstList(item);
         }
     }
 
+    private onContextMenu(ev: React.MouseEvent<HTMLDivElement>) {
+        const { item, actions } = this.props;
+        const { screenX: x, screenY: y } = ev;
+
+        actions.selectFile(item);
+        actions.activateFile(item);
+
+        if (this.menu.items.length > 0) {
+            const currWindow = remote.getCurrentWindow();
+            setTimeout(() => {
+                this.menu.popup(currWindow, { x, y, async: true });
+            });
+        }
+    }
+
     public componentWillMount() {
+        const { item, folder } = this.props;
+        this.menu = new remote.Menu();
+        if (item.type === "file") {
+            this.menu.append(new remote.MenuItem({
+                label: "Export",
+                click: () => {
+                    const name = remote.dialog.showSaveDialog({
+                        title: "Export file",
+                        defaultPath: `${folder}/${item.name}`
+                    }, (path) => {
+                        console.log("Export", path);
+                        if (path) {
+                            this.props.actions.fstExport(item, path);
+                        }
+                    });
+                }
+            }));
+
+        }
         window.addEventListener("click", this.unselectFile);
     }
 
@@ -117,12 +162,21 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
         window.removeEventListener("click", this.unselectFile);
     }
 
+    //
+    private unselectFile() {
+        if (this.props.selectedFile !== undefined) {
+            this.props.actions.selectFile();
+        }
+    }
+
     public get className(): string {
         return "case-hierarchy-item" +
             (isFstSelected(this.props.item, this.props.selectedFile) ? " selected" : "") +
-            (isFstSelected(this.props.item, this.props.activeFile)   ? " active"   : "");
+            (isFstSelected(this.props.item, this.props.activeFile)   ? " active"   : "") +
+            (this.props.item.deleted === true ?                        " deleted"  : "");
     }
 
+    // Render
     private StateIcon = (props: {item: FstItem}) =>
     (
         props.item.type === "file" || props.item.canOpen === false  ?
@@ -184,6 +238,7 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
             <div className={this.className}>
                 <div className="case-hierarchy-label"
                      onClick={(ev) => this.onClick(ev, item)}
+                     onContextMenu={this.onContextMenu}
                      onDoubleClick={(ev) => this.onDoubleClick(ev, item)}>
                     <StateIcon item={item}/>
                     <ItemIcon item={item}/>

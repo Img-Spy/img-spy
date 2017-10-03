@@ -11,4 +11,5 @@ export { WindowEvent }      from "./window-event";
 export { JqxBarGauge,
          JqxDockingLayout } from "./jqxwidgets";
 export { ResizePanel }      from "./resize";
+export { Tabs }             from "./tabs";
 export const FixedTable = _FixedTable;

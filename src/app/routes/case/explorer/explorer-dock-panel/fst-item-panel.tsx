@@ -18,6 +18,7 @@ import { selectFile,
 
 import { EditorPanel }          from "./editor-panel";
 import { DirectoryPanel }       from "./directory-panel";
+import { FilePanel }            from "./file-panel";
 
 
 interface InputFstItemPanelPanelProps {
@@ -67,16 +68,12 @@ export class FstItemPanelClass extends React.Component<FstItemPanelProps, undefi
         super(props, context);
     }
 
-    public FilePanel(props: {item: FstFile}): JSX.Element {
-        return null;
-    }
-
     public DataSourcePanel(props: {item: FstDataSource}): JSX.Element {
         return null;
     }
 
     public render() {
-        const { FilePanel, DataSourcePanel } = this;
+        const { DataSourcePanel } = this;
         const { item, fstRoot, actions } = this.props;
 
         if (this.props.widget) {
@@ -89,10 +86,10 @@ export class FstItemPanelClass extends React.Component<FstItemPanelProps, undefi
         }
 
         return (
-            <div className="file-panel">
+            <div className="fst-panel">
                 {
                     item.type === "file" ?
-                        <FilePanel item={item}/> :
+                        <FilePanel item={item} fstRoot={fstRoot}/> :
                     item.type === "dataSource" ?
                         <DataSourcePanel item={item}/> :
                     item.type === "directory" &&

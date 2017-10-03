@@ -335,14 +335,32 @@ div {
         user-select: none;
         cursor: default;
     }
-    
+
     &.selectable {
-        ::selection {
+        ::selection, &::selection {
             background: palette-A200($primary);
         }
 
         user-select: text;
-        cursor: text;
+    }
+}
+
+.tabs {
+    
+    .tab {
+        z-index: 10;
+        padding: 4px 14px;
+        border: 1px palette-900($palette) solid;
+        color: palette-400($palette);
+        font-weight: bold;
+        background-color: palette-600($palette);
+        cursor: pointer;
+
+        &.active {
+            color: inherit;
+            background-color: palette-700($palette);
+            border-bottom: none;
+        }
     }
 }
 

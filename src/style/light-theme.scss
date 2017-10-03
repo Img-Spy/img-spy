@@ -1,5 +1,5 @@
 // @import 'golden-layout/goldenlayout-light-theme';
 @import 'core';
 
-$light-theme: theme($goldenlayout-light, #444444, white, $indigo);
+$light-theme: theme($goldenlayout-light, #444444, white, $indigo, $red);
 @include spy-theme($light-theme);

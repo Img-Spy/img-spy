@@ -1,10 +1,12 @@
 import { Action }               from "redux-actions";
 
 import { FstItem,
+         FstFile,
          FileSelector,
          FstDirectory,
          FstAddPayload,
          FstUnlinkPayload,
+         FstExportPayload,
          FstHashPayload }       from "app/models";
 import { actions }              from "app/constants";
 
@@ -33,3 +35,9 @@ export const fstHash = (payload: FstItem): Action<FstItem> =>
 
 export const fstList = (payload: FstDirectory): Action<FstDirectory> =>
     ({ type: actions.FST_LIST, payload });
+
+export const fstContent = (payload: FstFile): Action<FstFile> =>
+    ({ type: actions.FST_CONTENT, payload});
+
+export const fstExport = (file: FileSelector, path: string): Action<FstExportPayload> =>
+    ({ type: actions.FST_EXPORT, payload: { file, path }});

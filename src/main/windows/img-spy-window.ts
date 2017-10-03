@@ -32,4 +32,6 @@ export abstract class ImgSpyWindow<T = any> extends BrowserWindow {
             query: query
         }));
     }
+
+    protected buildContextMenu() {}
 }

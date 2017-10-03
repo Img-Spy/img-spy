@@ -4,6 +4,7 @@
 /* Init variables */
 $palette: theme-palette($theme);
 $primary: theme-primary($theme);
+$warn:    theme-warn($theme);
 
 /* Declare mixins  */
 @mixin spy-window-case-phosphor() {
@@ -104,6 +105,10 @@ $primary: theme-primary($theme);
         font-size: 14px;
 
         div.case-hierarchy-item {
+
+            &.deleted > .case-hierarchy-label {
+                color: palette-A700($warn);
+            }
 
             &.active > .case-hierarchy-label {
                 background-color: palette-600($palette);
@@ -249,6 +254,48 @@ $primary: theme-primary($theme);
     .explorer-editor {
         height: 100%;
         min-width: 400px;
+
+        .fst-panel {
+            min-height: 200px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+
+            > * {
+                margin: 6px;
+                flex: 1 1 auto;
+            }
+
+            .explorer-border {
+                border: 1px palette-900($palette) solid;
+                background-color: palette-700($palette);
+            }
+        }
+    }
+
+    .string-view {
+        padding: 10px;
+        overflow: auto;
+        position: relative;
+
+        > div {
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+        }
+    }
+
+    .hex-view {
+        padding: 10px;
+        overflow: auto;
+        position: relative;
+        overflow-y: auto;
+
+        > div {
+            position: absolute;
+            word-break: break-all;
+            cursor: text;
+        }
     }
 }
 @mixin spy-window-case-explorer() {

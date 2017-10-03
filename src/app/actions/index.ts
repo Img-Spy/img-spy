@@ -15,7 +15,9 @@ export { fstAdd,
          fstToggleOpen,
          fstHash,
          fstUnlink,
-         fstList }          from "./fst-watcher.actions";
+         fstList,
+         fstContent,
+         fstExport }          from "./fst-watcher.actions";
 export { selectFile,
          openDockPanel,
          closeDockPanel,

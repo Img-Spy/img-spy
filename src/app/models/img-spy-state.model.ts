@@ -15,6 +15,8 @@ export interface ImgSpyState {
     navigate: RouterData;
     resize: ResizeModelMap;
     forms: any;
+    folder: string;
+    windowId: string;
 
     isPinging: boolean;
     settings: SettingsModel;
