@@ -23,11 +23,11 @@ export class FstObservable {
             Observable<FstContObsPayload> {
 
         if (file.address === "virtual") {
-            const { path, imgPath, offset, inode } = file;
+            const { path, imgPath, offset: imgaddr, inode } = file;
             return Observable.create(
                 (observer: Observer<FstContObsPayload>) => {
                     const img = new TSK(`${folder}/${imgPath}`);
-                    const content = img.get(offset, inode);
+                    const content = img.get({ imgaddr, inode });
 
                     observer.next({ file, content });
                     observer.complete();
@@ -125,4 +125,3 @@ export class ResizeObservable extends Observable<ResizeSize> {
 export type EpicObservable<T>   = ActionsObservable<Action<T>> & Observable<Action<T>>;
 export type ActionObservable<T> = Observable<Action<T>>;
 export type ActionObserver<T>   = Observer<Action<T>>;
-

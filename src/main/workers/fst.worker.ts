@@ -4,7 +4,8 @@ import { ImgFile,
 import { Observable }           from "rxjs";
 
 import { AnalysisInfo,
-         TimelineAnalysis }     from "main/models";
+         TimelineAnalysis,
+         SearchResult }         from "main/models";
 
 import { ImgSpyWorker,
          QueryObservable }      from "./img-spy-worker";
@@ -15,7 +16,8 @@ export type FstWorkerMessage =
     AnalyzeImgMessage       | AnalyzeImgCallbackMessage |
     ListImgMessage          | ListImgCallbackMessage |
     GetContentImgMessage    | GetContentImgCallbackMessage |
-    TimelineImgMessage      | TimelineImgCallbackMessage;
+    TimelineImgMessage      | TimelineImgCallbackMessage |
+    SearchImgMessage        | SearchImgCallbackMessage;
 
 
 
@@ -82,6 +84,25 @@ export interface TimelineImgCallbackMessage {
 }
 
 
+export interface SearchImgMessage {
+    id: string;
+    type: "searchImg";
+    content: {
+        path: string;
+        offset: number;
+        inode: number;
+
+        needle: string;
+    };
+}
+export interface SearchImgCallbackMessage {
+    id: string;
+    type: "searchImgCallback";
+    keepAlive: boolean;
+    content: SearchResult;
+}
+
+
 export class FstWorker extends ImgSpyWorker<FstWorkerMessage> {
 
     public get childProcessFile() {
@@ -135,6 +156,17 @@ export class FstWorker extends ImgSpyWorker<FstWorkerMessage> {
         this.queueMessage(message, cb);
     }
 
+    public searchImage(path: string, offset: number, inode: number,
+                       needle: string, cb: (result: SearchResult) => void) {
+        const id = uuidv1();
+        const message: FstWorkerMessage = {
+            id,
+            type: "searchImg",
+            content: { path, offset, inode, needle }
+        };
+        this.queueMessage(message, cb);
+    }
+
     protected handleMessages(message$: QueryObservable<FstWorkerMessage>) {
         message$
             .filter(m => [
@@ -157,6 +189,19 @@ export class FstWorker extends ImgSpyWorker<FstWorkerMessage> {
 
                 cb(content);
                 if (content.finish) {
+                    cb(false);
+                }
+            });
+
+        message$
+            .filter(m => m.response.type === "searchImgCallback")
+            .subscribe(m => {
+                const { cb } = m;
+                const response = <SearchImgCallbackMessage>m.response;
+
+                if (response.keepAlive) {
+                    cb(response.content);
+                } else {
                     cb(false);
                 }
             });

@@ -6,9 +6,11 @@ import * as uuidv1                  from "uuid/v1";
 import { Observable,
          Observer }                 from "rxjs";
 import { TSK,
+         TskOptions,
          TimelineItem }             from "tsk-js";
 
-import { TimelineAnalysis  }        from "main/models";
+import { TimelineAnalysis,
+         SearchResult }             from "main/models";
 
 import { AnalyzeImgMessage,
          AnalyzeImgCallbackMessage,
@@ -18,6 +20,8 @@ import { AnalyzeImgMessage,
          GetContentImgCallbackMessage,
          TimelineImgMessage,
          TimelineImgCallbackMessage,
+         SearchImgMessage,
+         SearchImgCallbackMessage,
          FstWorkerMessage }         from "./fst.worker";
 
 
@@ -38,9 +42,9 @@ const calculateHash =
 
 const listImage =
     (message: ListImgMessage) => {
-        const { path, offset, inode } = message.content,
+        const { path, offset: imgaddr, inode } = message.content,
                 img = new TSK(path),
-                files = img.list(offset, inode),
+                files = img.list({ imgaddr, inode }),
                 resp: ListImgCallbackMessage = {
                     ...message,
                     type: "listImgCallback",
@@ -52,9 +56,9 @@ const listImage =
 
 const getContentImage =
     (message: GetContentImgMessage) => {
-        const { path, offset, inode } = message.content,
+        const { path, offset: imgaddr, inode } = message.content,
                 img = new TSK(path),
-                content = img.get(offset, inode),
+                content = img.get({ imgaddr, inode }),
                 resp: GetContentImgCallbackMessage = {
                     ...message,
                     type: "getContentImgCallback",
@@ -66,13 +70,15 @@ const getContentImage =
 
 const timelineImage =
     (message: TimelineImgMessage) => {
-        const { path, offset, inode } = message.content,
-                img = new TSK(path);
+        const { path, offset: imgaddr, inode } = message.content,
+                img = new TSK(path),
+                opts: TskOptions = { imgaddr, inode };
 
         Observable
             .create((observer: Observer<TimelineAnalysis>) => {
-                const files = img.timeline(offset, inode, (files) =>
-                    observer.next({ files, finish: false })
+                const files = img.timeline(
+                    (files) => observer.next({ files, finish: false }),
+                    opts
                 );
 
                 observer.next({ files, finish: true });
@@ -85,6 +91,38 @@ const timelineImage =
                     type: "timelineImgCallback",
                     keepAlive: !finish,
                     content: { files, finish }
+                };
+                process.send(resp);
+            });
+    };
+
+const searchImage =
+    (message: SearchImgMessage) => {
+        const { path, offset: imgaddr, inode, needle } = message.content,
+                img = new TSK(path),
+                opts: TskOptions = { imgaddr, inode };
+
+        Observable
+            .create((observer: Observer<SearchResult>) => {
+                const files = img.search(
+                    needle,
+                    (file, context, index) => observer.next({
+                        file,
+                        context,
+                        index
+                    }),
+                    opts
+                );
+
+                observer.next(undefined);
+                observer.complete();
+            })
+            .subscribe((result) => {
+                const resp: SearchImgCallbackMessage = {
+                    ...message,
+                    type: "searchImgCallback",
+                    keepAlive: !result,
+                    content: result
                 };
                 process.send(resp);
             });
@@ -106,6 +144,10 @@ process.on("message", (message: FstWorkerMessage, sendHandle: any) => {
 
         case "timelineImg":
             timelineImage(message);
+            break;
+
+        case "searchImg":
+            searchImage(message);
             break;
     }
 });
