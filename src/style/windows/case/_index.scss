@@ -179,6 +179,7 @@ $warn:    theme-warn($theme);
 
         .timeline-item {
             padding: 5px;
+            cursor: pointer;
 
             &.selected {
                 background-color: palette-600($palette);

@@ -18,7 +18,7 @@ import { updateTimeline }       from "app/actions";
 interface InputTimelineTableProps
         extends React.HTMLAttributes<HTMLDivElement> {
     timeline: TimelineInfo;
-    tableSettings: TableSettings;
+    tableProps: TableSettings;
 }
 
 interface TimelineTableActions {
@@ -68,32 +68,32 @@ export class TimelineTableClass
     }
 
     public render(): JSX.Element {
-        const { timeline, tableSettings, actions } = this.props;
+        const { timeline, tableProps, actions } = this.props;
 
-        const tableProps = {
-            ...tableSettings,
+        const fullTableProps = {
+            ...tableProps,
             ...timeline.tableSettings,
 
             className: "-striped -highlight",
             data: timeline.sortedItems,
             columns: [{
-                Header: "Name",
-                accessor: "name"
-            }, {
                 Header: "Path",
                 accessor: "path"
             }, {
                 id: "actions",
                 Header: "Actions",
+                width: 96,
                 accessor: (t: TimelineItem) => t.actions
                     .map(a => a.substr(0, 2))
                     .join(","),
             }, {
                 Header: "Date",
-                accessor: "date"
+                accessor: "date",
+                width: 209,
             }, {
                 Header: "Inode",
-                accessor: "inode"
+                accessor: "inode",
+                width: 99,
             }],
             onSortedChange: (defaultSorted) => {
                 actions.updateTimeline({
@@ -106,7 +106,8 @@ export class TimelineTableClass
             }
         };
 
-        return <ReactTable ref="" {...tableProps}/>;
+        console.log("Redraw");
+        return <ReactTable ref="" {...fullTableProps}/>;
     }
 }
 

@@ -77,26 +77,41 @@ export class TimelineResultsClass
         if (box === null) {
             this.resizeSubscription.unsubscribe();
         } else {
-            const tableContainer = box.childNodes[0] as HTMLDivElement;
-            const table = tableContainer.childNodes[0] as HTMLDivElement;
 
             this.resizeSubscription = ResizeObservable
                 .create(box, "object")
-                // .debounceTime(40)
                 .subscribe((size) => {
+                    const tableContainer = box.childNodes[0] as HTMLDivElement;
+                    const table =
+                        tableContainer.childNodes[0] as HTMLDivElement;
+                    if (!table) {
+                        return;
+                    }
+
                     const { actions, tableSettings } = this.props;
                     const scroll = table.offsetHeight - table.scrollHeight;
 
-                    const pageSize = Math.floor(
-                        (size.height - 76 - scroll) / 34
-                    );
-                    if (tableSettings.pageSize === pageSize) {
+                    const expected = 33;
+                    const n = (size.height - (73 + scroll)) / expected;
+                    const pageSize = Math.floor(n);
+
+                    const real = (size.height - (73 + scroll)) / pageSize;
+                    const padding = ( real - 19 ) / 2;
+
+                    if (tableSettings.props &&
+                            tableSettings.props.pageSize === pageSize) {
+                        actions.updateTableSettings({
+                            rowVerticalPadding: padding
+                        });
                         return;
                     }
 
                     actions.updateTableSettings({
-                        pageSize,
-                        defaultPageSize: pageSize
+                        rowVerticalPadding: padding,
+                        props: {
+                            pageSize,
+                            defaultPageSize: pageSize
+                        }
                     });
                 });
         }
@@ -113,12 +128,17 @@ export class TimelineResultsClass
 
         return (
             <div {...divProps} className={`${className} outer-box margin`}>
+                <style>{`
+                    .ReactTable .rt-th, .ReactTable .rt-td {
+                        padding: ${tableSettings.rowVerticalPadding}px 5px;
+                    }
+                `}</style>
                 <div className="box scroll" ref={this.onBoxAttached}
                     style={{overflow: "hidden"}}>
                 { timeline &&
                     <TimelineTable
                         timeline={timeline}
-                        tableSettings={tableSettings}
+                        tableProps={tableSettings.props}
                     />
                 }
                 </div>
