@@ -1,0 +1,50 @@
+
+
+@mixin spy-base-buttons($theme) {
+
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+.fa-button {
+    cursor: pointer;
+
+    &:hover {
+        font-weight: bold;
+    }
+}
+
+
+button.btn {
+    margin: 5px;
+    border-radius: 4px;
+    background-color: palette-600($palette);
+    border-color: palette-400($palette);
+    color: palette-100($palette);
+    padding: 4px 9px;
+    font-weight: bold;
+    max-height: 32px;
+    cursor: pointer;
+
+    &:focus {
+        outline: palette-100($palette) auto 5px;
+    }
+
+    &[disabled] {
+        background-color: palette-300($palette);
+        color: palette-400($palette);
+    }
+
+    &.primary {
+        background-color: palette-700($primary);
+        border-color: palette-400($primary);
+        color: palette-100($primary);
+
+        &:focus {
+            outline: palette-100($primary) auto 5px;
+        }
+    
+    }
+}
+
+}

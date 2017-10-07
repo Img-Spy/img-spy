@@ -75,25 +75,23 @@ export class FstItemPanelClass extends React.Component<FstItemPanelProps, undefi
     public render() {
         const { DataSourcePanel } = this;
         const { item, fstRoot, actions } = this.props;
+        const key = `${item.address}-${item.path}`;
 
         if (this.props.widget) {
             this.props.widget.title.label = this.props.item.name;
             this.props.widget.title.closable = true;
         }
 
-        if (item.address === "virtual" && item.type === "directory") {
-            
-        }
-
         return (
-            <div className="fst-panel">
+            <div className="fst-item-panel outer-box margin">
                 {
                     item.type === "file" ?
-                        <FilePanel item={item} fstRoot={fstRoot}/> :
+                        <FilePanel key={key} item={item} fstRoot={fstRoot}/> :
                     item.type === "dataSource" ?
-                        <DataSourcePanel item={item}/> :
+                        <DataSourcePanel key={key} item={item}/> :
                     item.type === "directory" &&
-                        <DirectoryPanel item={item} fstRoot={fstRoot}/>
+                        <DirectoryPanel key={key} item={item}
+                                        fstRoot={fstRoot}/>
                 }
             </div>
         );

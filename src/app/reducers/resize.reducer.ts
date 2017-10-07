@@ -42,11 +42,33 @@ const explorerEditor: ResizeModel = {
     ]
 };
 
+const timeline: ResizeModel = {
+    size: undefined,
+    name: "timeline",
+    direction: "horizontal",
+    items: [
+        { current: { value: 20, units: "percent" } },
+        { current: { value: 80, units: "percent" } },
+    ]
+};
+
+const timelineResults: ResizeModel = {
+    size: undefined,
+    name: "timelineResults",
+    direction: "vertical",
+    items: [
+        { current: { value: 50, units: "percent" } },
+        { current: { value: 50, units: "percent" } },
+    ]
+};
+
 export default () => {
     const initialState: ResizeModelMap = {
         explorerLeftBar,
         explorer,
-        explorerEditor
+        explorerEditor,
+        timeline,
+        timelineResults
     };
     return handleActions<ResizeModelMap, UpdateResizePayload | StartResizePayload | ResizePayload>({
             [actions.RSZ_UPDATE]:

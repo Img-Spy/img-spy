@@ -1,0 +1,37 @@
+
+@mixin spy-base-scroll($theme) {
+    
+    $palette: theme-palette($theme);
+    $primary: theme-primary($theme);
+    $warn:    theme-warn($theme);
+
+.scroll {
+
+    &::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb,
+    *::-webkit-scrollbar-thumb {
+        background: palette-700($palette);
+        border: 1px palette-900($palette) solid;
+        // border-radius: 5px;
+    }
+
+    &::-webkit-scrollbar-track,
+    *::-webkit-scrollbar-track {
+        background: palette-400($palette);
+        // border-radius: 5px;
+    }
+
+    &::-webkit-scrollbar-corner,
+    *::-webkit-scrollbar-corner {
+        // background: transparent;
+        background: palette-400($palette);
+    }
+}
+
+
+}

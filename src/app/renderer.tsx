@@ -1,17 +1,19 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
-import * as React from "react";
+import * as React       from "react";
+import { client }       from "electron-connect";
+import { render }       from "react-dom";
+import { Provider }     from "react-redux";
 
-import { client }   from "electron-connect";
-import { render }   from "react-dom";
-import { Provider } from "react-redux";
+import { CONFIG }       from "main/config";
 
-import { CONFIG }   from "main/config";
+import { App }          from "app/components";
+import { Theme }        from "app/models";
+import { updateTheme }  from "app/actions";
 
-import { App }      from "./components";
-import { appStore } from "./store";
-import args         from "./args";
+import { appStore }     from "./store";
+import args             from "./args";
 
 
 bootstrap(
@@ -28,6 +30,9 @@ function bootstrap<P>(element: React.ReactElement<P>): React.Component<P, React.
     if (CONFIG.isDevelopment) {
         client.create();
         (window as any).reactRoot = reactRoot;
+        (window as any).changeTheme = (theme: Theme) => {
+            appStore.dispatch(updateTheme(theme));
+        };
     }
 
     return reactRoot;

@@ -68,8 +68,9 @@ export class DirectoryPanelClass extends React.Component<DirectoryPanelProps, un
         const children = getFstChildren(fstRoot, item);
 
         return (
-            <div className="directory-panel explorer-border">
-                <FixedTable.Table columnWidths={[null, null]} >
+            <div className="directory-panel box scroll">
+                <FixedTable.Table className="full-width"
+                                  columnWidths={[null, null]}>
                     <FixedTable.Header>
                         <FixedTable.Cell>Name</FixedTable.Cell>
                         <FixedTable.Cell>Type</FixedTable.Cell>

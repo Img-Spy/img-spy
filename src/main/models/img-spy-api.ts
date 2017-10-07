@@ -11,7 +11,8 @@ import { SettingsModel }        from "app/models";
 
 import { CONFIG }               from "main/config";
 import { ImgSpyWindowManager }  from "main/windows";
-import { AnalysisInfo }         from "main/models";
+import { AnalysisInfo,
+         TimelineAnalysis }     from "main/models";
 import { FstWorker }            from "main/workers";
 
 import { WindowEvents,
@@ -56,8 +57,8 @@ export class ImgSpyApi {
         this.fstWorker.getContentImage(`${this.windowManager.folder}/${path}`, offset, inode, cb);
     }
 
-    public saveDialog(options: Electron.SaveDialogOptions, cb: (filename: string) => void) {
-        dialog.showSaveDialog(options, cb);
+    public timelineImage(path: string, offset: number, inode: number, cb: (result: TimelineAnalysis) => void) {
+        this.fstWorker.timelineImage(`${this.windowManager.folder}/${path}`, offset, inode, cb);
     }
 
     // Handle settings
@@ -94,6 +95,7 @@ export class ImgSpyApi {
                 caseName: path.basename(CONFIG.currentFolder)
             },
             sources: {},
+            timelines: {},
             theme: "light"
         };
     }

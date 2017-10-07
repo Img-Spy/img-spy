@@ -1,0 +1,32 @@
+
+@mixin spy-base-left-bar($theme) {
+    
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+div.left-bar {
+    background-color: palette-600($palette);
+    border-right: palette-700($palette) 1px solid;
+    width: 48px;
+
+    .left-bar-button {
+        width: 28px;
+        height: 28px;
+        padding: 10px;
+        text-align: center;
+        vertical-align: middle;
+        color: palette-400($palette);
+        border: palette-700($palette) 1px solid;
+        border-left: none;
+        font-size: 26px;
+        cursor: pointer;
+
+        &.active, &:hover {
+            color: palette-100($palette);
+            border-color: palette-700($palette);
+        }
+    }
+}
+
+}

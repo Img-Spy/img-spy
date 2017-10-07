@@ -1,27 +1,53 @@
-.lm_popout {
-    display: none;
+
+div#app {
+    height: 100%;
 }
 
+div.router {
+    height: 100%;
+}
 
-// @mixin reset() {
-//     height: 100%;
-//     width: 100%;
-//     margin: 0px;
-// }
+body, input, button, textarea {
+    font-family: sans-serif;
+}
 
-// html {
-//     @include reset();
+.flex {
+    display: flex;
 
-//     body {
-//         @include reset();
-//     }
-// }
+    &.center {
+        align-items: center;
+    }
 
+    &.end {
+        justify-content: flex-end;
+    }
 
-// #app {
-//     @include reset();
+    &.row {
+        flex-direction: row;
+    
+        > .flex-auto {
+            flex: 1 1 auto;
+        }
+    }
+    &.column {
+        flex-direction: column;
 
-//     .router {
-//         @include reset();
-//     }
-// }
+        > .flex-auto {
+            flex: 1 1 auto;
+        }
+    }
+}
+
+.full-width {
+    width: 100%;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.dots {
+    white-space: nowrap;
+    overflow:hidden !important;
+    text-overflow: ellipsis;
+}

@@ -7,7 +7,8 @@ import { SettingsModel,
          DataSourceForm }       from "./settings.model";
 import { SettingsWindowModel }  from "./settings-window.model";
 import { TerminalModel }        from "./terminal.model";
-import { CaseWindowModel }      from "./case-window.model";
+import { ExplorerModel }        from "./explorer.model";
+import { TimelinesModel }        from "./timeline.model";
 import { ResizeModelMap }       from "./resize.model";
 
 
@@ -27,7 +28,8 @@ export interface ImgSpyState {
 
     fstRoot: FstRoot;
     fstItem: FstItem;
-    caseWindow: CaseWindowModel;
+    explorer: ExplorerModel;
+    timeline: TimelinesModel;
 }
 
 export interface CaseState {

@@ -1,35 +1,39 @@
-import { Action }           from "redux-actions";
-import { actions }          from "app/constants";
-import { NavigatePayload }  from "app/models";
+import { Action }               from "redux-actions";
+import { actions }              from "app/constants";
+import { NavigatePayload }      from "app/models";
 
 export { ApplySettingsPayload,
          applySettings,
          deleteSource,
          updateSource,
-         updateSettings }   from "./settings.actions";
+         updateTheme,
+         updateSettings }       from "./settings.actions";
 export { selectSource,
-         editSource }       from "./settings-window.actions";
-export { pushTerminalLine } from "./terminal.actions";
+         editSource }           from "./settings-window.actions";
+export { pushTerminalLine }     from "./terminal.actions";
 export { fstAdd,
          fstOpen,
          fstToggleOpen,
-         fstHash,
+         fstAnalyze,
          fstUnlink,
          fstList,
          fstContent,
-         fstExport }          from "./fst-watcher.actions";
+         fstExport }            from "./fst-watcher.actions";
 export { selectFile,
          openDockPanel,
          closeDockPanel,
          updateDockPanel,
-         activateFile }     from "./case-window.actions";
+         activateFile }         from "./explorer.actions";
 export { updateResizeSize,
          moveResize,
          startResize,
-         stopResize }       from "./resize.actions";
+         stopResize }           from "./resize.actions";
+export { createTimeline,
+         updateTimeline,
+         selectTimeline,
+         deleteTimeline,
+         updateTableSettings }  from "./timeline.actions";
 
-
-export const ping = () => ({ type: actions.PING });
 
 interface NavigatorAction<T> {
     (path: string, args?: T): Action<NavigatePayload<T>>;
@@ -50,3 +54,5 @@ export function createNavigator<T>(name: string): NavigatorAction<T> {
 }
 
 export const closeModal = () => ({ type: actions.CLOSE_MODAL });
+
+export const doNothing = () => ({ type: "DO_NOTHING" });

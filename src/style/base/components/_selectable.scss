@@ -1,0 +1,24 @@
+
+
+@mixin spy-base-selectable($theme) {
+
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+div {
+    &:not(.selectable) {
+        user-select: none;
+        cursor: default;
+    }
+
+    &.selectable {
+        ::selection, &::selection {
+            background: palette-A200($primary);
+        }
+
+        user-select: text;
+    }
+}
+
+}

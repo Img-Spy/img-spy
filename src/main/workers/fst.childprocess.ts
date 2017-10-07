@@ -1,13 +1,24 @@
+require("app-module-path").addPath(__dirname + "/../..");
+require("rxjs/add/operator/sampleTime");
+
+import * as md5File                 from "md5-file";
+import * as uuidv1                  from "uuid/v1";
+import { Observable,
+         Observer }                 from "rxjs";
+import { TSK,
+         TimelineItem }             from "tsk-js";
+
+import { TimelineAnalysis  }        from "main/models";
+
 import { AnalyzeImgMessage,
          AnalyzeImgCallbackMessage,
          ListImgMessage,
          ListImgCallbackMessage,
          GetContentImgMessage,
          GetContentImgCallbackMessage,
+         TimelineImgMessage,
+         TimelineImgCallbackMessage,
          FstWorkerMessage }         from "./fst.worker";
-import * as md5File                 from "md5-file";
-import * as uuidv1                  from "uuid/v1";
-import { TSK }                      from "tsk-js";
 
 
 const calculateHash =
@@ -43,7 +54,7 @@ const getContentImage =
     (message: GetContentImgMessage) => {
         const { path, offset, inode } = message.content,
                 img = new TSK(path),
-                content = img.getContent(offset, inode),
+                content = img.get(offset, inode),
                 resp: GetContentImgCallbackMessage = {
                     ...message,
                     type: "getContentImgCallback",
@@ -51,6 +62,32 @@ const getContentImage =
                 };
 
         process.send(resp);
+    };
+
+const timelineImage =
+    (message: TimelineImgMessage) => {
+        const { path, offset, inode } = message.content,
+                img = new TSK(path);
+
+        Observable
+            .create((observer: Observer<TimelineAnalysis>) => {
+                const files = img.timeline(offset, inode, (files) =>
+                    observer.next({ files, finish: false })
+                );
+
+                observer.next({ files, finish: true });
+                observer.complete();
+            })
+            .subscribe((result) => {
+                const { files, finish } = result;
+                const resp: TimelineImgCallbackMessage = {
+                    ...message,
+                    type: "timelineImgCallback",
+                    keepAlive: !finish,
+                    content: { files, finish }
+                };
+                process.send(resp);
+            });
     };
 
 process.on("message", (message: FstWorkerMessage, sendHandle: any) => {
@@ -65,6 +102,10 @@ process.on("message", (message: FstWorkerMessage, sendHandle: any) => {
 
         case "getContentImg":
             getContentImage(message);
+            break;
+
+        case "timelineImg":
+            timelineImage(message);
             break;
     }
 });

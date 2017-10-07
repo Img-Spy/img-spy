@@ -4,7 +4,8 @@ import modalEpic                    from "./modal.epic";
 import settingsEpic                 from "./settings.epic";
 import fstWatcherEpic               from "./fst-watcher.epic";
 import autoSaveSettingsEpic         from "./auto-save-settings.epic";
-import caseWindowEpic               from "./case-window.epic";
+import explorerEpic                 from "./explorer.epic";
+import timelineEpic                 from "./timeline.epic";
 
 const epicMap = {
     "case-selector": () => {
@@ -16,7 +17,8 @@ const epicMap = {
             fstWatcherEpic(),
             settingsEpic(),
             autoSaveSettingsEpic(),
-            caseWindowEpic()
+            explorerEpic(),
+            timelineEpic()
         );
     },
     "settings": () => {

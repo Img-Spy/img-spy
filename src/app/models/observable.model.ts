@@ -1,14 +1,16 @@
-import * as fs                  from "fs";
+import * as fs                          from "fs";
+import * as elementResizeDetectorMaker  from "element-resize-detector";
 import { Observable,
-         Observer }             from "rxjs";
-import { ActionsObservable }    from "redux-observable";
-import { Action }               from "redux-actions";
-import { TSK }                  from "tsk-js";
+         Observer }                     from "rxjs";
+import { ActionsObservable }            from "redux-observable";
+import { Action }                       from "redux-actions";
+import { TSK }                          from "tsk-js";
 
-import { api }                  from "app/api";
-import { ImgSpyApi }            from "main/models";
+import { api }                          from "app/api";
+import { ImgSpyApi }                    from "main/models";
 
-import { FstFile }              from "./fst-watcher.model";
+import { FstFile }                      from "./fst-watcher.model";
+import { ResizeSize }                   from "./resize.model";
 
 
 interface FstContObsPayload {
@@ -25,7 +27,7 @@ export class FstObservable {
             return Observable.create(
                 (observer: Observer<FstContObsPayload>) => {
                     const img = new TSK(`${folder}/${imgPath}`);
-                    const content = img.getContent(offset, inode);
+                    const content = img.get(offset, inode);
 
                     observer.next({ file, content });
                     observer.complete();
@@ -60,11 +62,63 @@ export class ApiObservable {
         return Observable.create((observer: Observer<T>) => {
             fn(api, onResponse);
 
-            function onResponse(value: T) {
-                observer.next(value);
-                observer.complete();
+            function onResponse(value: T | false) {
+                if (value === false) {
+                    observer.complete();
+                } else {
+                    observer.next(value);
+                }
             }
         });
+    }
+}
+
+type ResizeStrategy = "scroll" | "object";
+export class ResizeObservable extends Observable<ResizeSize> {
+    private static strategies = {
+        // <- For ultra performance.
+        scroll: elementResizeDetectorMaker( { strategy: "scroll"  } ),
+        object: elementResizeDetectorMaker(),
+    };
+
+    public static create(
+        element: HTMLElement,
+        strategy: ResizeStrategy = "scroll"
+    ): ResizeObservable {
+
+        const selectedStrategy = ResizeObservable.strategies[strategy];
+
+        const resize$ = Observable.create((observer: Observer<ResizeSize>) => {
+            selectedStrategy.listenTo(element, onResize);
+            return unsubscribe;
+
+            function onResize() {
+                const { clientHeight: height,
+                        clientWidth: width,
+                        scrollHeight,
+                        scrollWidth,
+                        offsetLeft: widthStart,
+                        offsetTop: heightStart } = element;
+
+                observer.next({
+                    height,
+                    width,
+
+                    scrollHeight,
+                    scrollWidth,
+
+                    heightStart,
+                    widthStart
+                });
+            }
+
+            function unsubscribe() {
+                selectedStrategy.removeListener(element, onResize);
+            }
+
+        });
+
+        return resize$;
     }
 }
 

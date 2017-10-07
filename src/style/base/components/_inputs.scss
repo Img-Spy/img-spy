@@ -1,0 +1,135 @@
+
+
+@mixin spy-base-inputs($theme) {
+
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+.input-box {
+
+    &.file {
+
+        input[type="file"] {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+    }
+
+    height: auto;
+
+    label {
+        margin-right: 10px;
+    }
+
+    input[type="text"], textarea, select, label.input-file {
+        background-color: palette-300($palette);
+        color: palette-900($palette);
+        padding: 5px;
+        margin: 4px;
+        border: none;
+        border-bottom: 1px palette-400($palette) solid;
+        border-radius: 2px;
+        font-size: 15px;
+
+        &:focus {
+            outline: palette-100($palette) auto 5px;
+        }
+    }
+
+    input[type="text"] {
+        width: 183px;
+    }
+
+    textarea {
+        width: 183px;
+        min-width: 183px;
+    }
+
+    select {
+        width: 193px;
+        height: 28px;
+    }
+
+    label.input-file {
+        display: block;
+        width: 183px;
+        height:17px;
+
+        white-space: nowrap;
+        overflow:hidden !important;
+        text-overflow: ellipsis;
+    }
+}
+
+div.directory-picker {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    input {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+    }
+
+    label {
+        font-size: 1.25rem;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        overflow: hidden;
+        padding: 0.625rem 1.25rem;
+        
+        color: invert(palette-100($palette));
+
+        border: 1px solid palette-600($palette);
+        background-color: palette-100($palette);
+        padding: 0;
+
+
+        span {
+            flex: 9999;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            vertical-align: top;
+
+            padding: 0.625rem 1.25rem;
+            
+        }
+
+        strong {
+
+            height: 100%;
+            color: theme-foreground($theme);
+            background-color: palette-600($palette);
+            display: inline-block;
+            padding: 0.625rem 1.25rem;
+
+            svg {
+                width: 1em;
+                height: 1em;
+                vertical-align: middle;
+                fill: currentColor;
+                margin-top: -0.25em;
+                margin-right: 0.25em;
+            }
+        }
+    }
+}
+
+}

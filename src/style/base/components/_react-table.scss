@@ -1,0 +1,17 @@
+
+
+@mixin spy-base-react-table($theme) {
+    
+    $palette: theme-palette($theme);
+    $primary: theme-primary($theme);
+    $warn:    theme-warn($theme);
+
+.select-wrap {
+    display: none
+}
+
+.ReactTable {
+    width: calc(100% - 2px);
+}
+
+}

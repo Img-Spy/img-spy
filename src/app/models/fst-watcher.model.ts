@@ -2,7 +2,7 @@ import * as anymatch        from "anymatch";
 import * as crypto          from "crypto";
 import { PartitionInfo }    from "tsk-js";
 
-import { FileSelector }     from "./case-window.model";
+import { FileSelector }     from "./explorer.model";
 import { DataSourceType }   from "./settings.model";
 
 

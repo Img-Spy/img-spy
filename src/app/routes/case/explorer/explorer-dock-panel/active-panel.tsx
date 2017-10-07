@@ -30,7 +30,7 @@ interface ActivePanelProps {
 
 const mapStateToProps: MapStateToProps<ActivePanelProps, InputActivePanelPanelProps> =
     (state: ImgSpyState, props) => {
-        const activeItemSelector = state.caseWindow.activeFile;
+        const activeItemSelector = state.explorer.activeFile;
         const activeItem: FstItem = getFstItem(
             state.fstRoot,
             activeItemSelector.path,

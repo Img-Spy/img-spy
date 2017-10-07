@@ -1,16 +1,21 @@
-import * as uuidv1          from "uuid/v1";
-import { ImgFile }          from "tsk-js";
+import * as uuidv1              from "uuid/v1";
+import { ImgFile,
+         TimelineItem }         from "tsk-js";
+import { Observable }           from "rxjs";
 
-import { AnalysisInfo }     from "main/models";
+import { AnalysisInfo,
+         TimelineAnalysis }     from "main/models";
 
-import { ImgSpyWorker }     from "./img-spy-worker";
+import { ImgSpyWorker,
+         QueryObservable }      from "./img-spy-worker";
 
 
 
 export type FstWorkerMessage =
     AnalyzeImgMessage       | AnalyzeImgCallbackMessage |
     ListImgMessage          | ListImgCallbackMessage |
-    GetContentImgMessage    | GetContentImgCallbackMessage;
+    GetContentImgMessage    | GetContentImgCallbackMessage |
+    TimelineImgMessage      | TimelineImgCallbackMessage;
 
 
 
@@ -21,8 +26,6 @@ export interface AnalyzeImgMessage {
         path: string;
     };
 }
-
-
 export interface AnalyzeImgCallbackMessage {
     id: string;
     type: "analyzeImgCallback";
@@ -39,8 +42,6 @@ export interface ListImgMessage {
         inode: number;
     };
 }
-
-
 export interface ListImgCallbackMessage {
     id: string;
     type: "listImgCallback";
@@ -57,12 +58,27 @@ export interface GetContentImgMessage {
         inode: number;
     };
 }
-
-
 export interface GetContentImgCallbackMessage {
     id: string;
     type: "getContentImgCallback";
     content: Buffer;
+}
+
+
+export interface TimelineImgMessage {
+    id: string;
+    type: "timelineImg";
+    content: {
+        path: string;
+        offset: number;
+        inode: number;
+    };
+}
+export interface TimelineImgCallbackMessage {
+    id: string;
+    type: "timelineImgCallback";
+    keepAlive: boolean;
+    content: TimelineAnalysis;
 }
 
 
@@ -98,7 +114,7 @@ export class FstWorker extends ImgSpyWorker<FstWorkerMessage> {
     }
 
     public getContentImage(path: string, offset: number, inode: number,
-                     cb: (buffer: Buffer) => void) {
+                           cb: (buffer: Buffer) => void) {
         const id = uuidv1();
         const message: FstWorkerMessage = {
             id,
@@ -108,14 +124,41 @@ export class FstWorker extends ImgSpyWorker<FstWorkerMessage> {
         this.queueMessage(message, cb);
     }
 
-    protected onMessageRetrieved(message: FstWorkerMessage, cb: Function) {
-        switch (message.type) {
+    public timelineImage(path: string, offset: number, inode: number,
+                         cb: (result: TimelineAnalysis) => void) {
+        const id = uuidv1();
+        const message: FstWorkerMessage = {
+            id,
+            type: "timelineImg",
+            content: { path, offset, inode }
+        };
+        this.queueMessage(message, cb);
+    }
 
-            case "getContentImgCallback":
-            case "analyzeImgCallback":
-            case "listImgCallback":
-                cb(message.content);
-                break;
-        }
+    protected handleMessages(message$: QueryObservable<FstWorkerMessage>) {
+        message$
+            .filter(m => [
+                "getContentImgCallback",
+                "analyzeImgCallback",
+                "listImgCallback",
+            ].indexOf(m.response.type) > 0)
+            .subscribe(m => {
+                const { response, cb } = m;
+                cb(response.content);
+                cb(false);
+            });
+
+        message$
+            .filter(m => m.response.type === "timelineImgCallback")
+            .sampleTime(100)
+            .subscribe(m => {
+                const { response, cb } = m;
+                const content = <TimelineAnalysis>response.content;
+
+                cb(content);
+                if (content.finish) {
+                    cb(false);
+                }
+            });
     }
 }

@@ -91,28 +91,6 @@ export default (folder, settings: SettingsModel) => {
                 };
             },
 
-        [actions.FST_HASH]:
-            (state: FstRoot, action: Action<FstUnlinkPayload>): FstRoot => {
-                const { path } = action.payload;
-                let { address } = action.payload;
-                if (!address) {
-                    address = "fisical";
-                }
-                const rootDir = state.children[address];
-
-                const newRootDir = updatePath(rootDir, path,
-                    (name, prev: FstDataSource) => ({...prev, computingHash: true })
-                );
-
-                return {
-                    ...state,
-                    children: {
-                        ...state.children,
-                        [address]: newRootDir
-                    }
-                };
-            },
-
         [actions.FST_UNLINK]:
             (state: FstRoot, action: Action<FstUnlinkPayload>): FstRoot => {
                 const { path } = action.payload;

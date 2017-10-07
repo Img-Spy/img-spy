@@ -30,22 +30,32 @@ export { getFstItem,
          FstAddPayload,
          FstExportPayload,
          FstHashPayload }       from "./fst-watcher.model";
-export { CaseWindowModel,
+export { ExplorerModel,
          FileSelector,
-         DockPanelModel }       from "./case-window.model";
+         DockPanelModel }       from "./explorer.model";
 export { ResizeModel,
          ResizeSize,
          ResizeItemModel,
          UpdateResizePayload,
-         ResizeObservable,
          StartResizePayload,
          ResizePayload,
          ResizeDirection,
          ResizeModelMap }       from "./resize.model";
 export { FstObservable,
          EpicObservable,
+         ResizeObservable,
          ActionObservable,
          ActionObserver,
          ApiObservable }        from "./observable.model";
 export { TabModel }             from "./tabs.model";
+export { TimelinesModel,
+         TableSettings,
+         CrtTimelinePayload,
+         TimelineInfo }         from "./timeline.model";
+export { GraphInfo,
+         GraphModel }           from "./graph.model";
+export { Sink }                 from "./sink.model";
 
+// export type Partial<T> = {
+//     [P in keyof T]?: T[P];
+// };

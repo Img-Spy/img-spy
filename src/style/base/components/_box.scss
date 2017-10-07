@@ -1,0 +1,59 @@
+
+
+@mixin spy-base-box($theme) {
+    
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+.outer-box {
+    min-height: 200px;
+    height: 100%;
+    @include flex-column;
+
+    &.margin > * {
+        margin: 6px;
+        @include flex-auto;
+    }
+
+    .box-container {
+        @include flex-column;
+
+        .box {
+            @include flex-auto;
+        }
+
+    }
+
+    .box {
+        &.scroll {
+            position: relative;
+            overflow: auto;
+
+            > * {
+                position: absolute;
+            }
+        }
+
+        &.margin {
+            > * {
+                margin: 10px;
+            }
+        }
+
+        &.padding {
+            > * {
+                padding: 10px;
+            }
+        }
+
+        &.box-tabs {
+            margin-top: -1px;
+        }
+
+        border: 1px palette-900($palette) solid;
+        background-color: palette-700($palette);
+    }
+}
+
+}

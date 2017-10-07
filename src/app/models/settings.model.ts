@@ -1,6 +1,7 @@
-import { PartitionInfo }        from "tsk-js"
+import { PartitionInfo }        from "tsk-js";
 
 import { dataSourceTypes }      from "app/constants";
+import { TimelineInfo }         from "./timeline.model";
 
 
 export type Theme = "dark" | "light";
@@ -14,6 +15,10 @@ export interface SettingsModel {
 
     sources: {
         [id: string]: DataSource;
+    };
+
+    timelines: {
+        [key: string]: TimelineInfo
     };
 
     theme: Theme;

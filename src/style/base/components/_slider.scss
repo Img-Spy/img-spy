@@ -1,0 +1,34 @@
+
+
+@mixin spy-base-slider($theme) {
+    
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+div.slider {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    div.slider-selector {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+
+        div.slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+
+            div.slide-size-fixer {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                display: flex;
+            }
+        }
+    }
+}
+
+}

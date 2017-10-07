@@ -1,5 +1,4 @@
 import * as React           from "react";
-import * as path from 'path';
 import { connect,
          MapStateToProps }  from "react-redux";
 import { Form,
@@ -21,7 +20,7 @@ interface ExplorerPropertiesProps {
 
 const mapStateToProps: MapStateToProps<ExplorerPropertiesProps, InputExplorerPropertiesProps> =
     (state: ImgSpyState, props) => {
-        const activePath = state.caseWindow.activeFile,
+        const activePath = state.explorer.activeFile,
               activeFstItem = (activePath !== undefined) ?
                     getFstItem(
                         state.fstRoot,
@@ -36,39 +35,9 @@ const mapStateToProps: MapStateToProps<ExplorerPropertiesProps, InputExplorerPro
 
 export class ExplorerPropertiesClass extends React.Component<ExplorerPropertiesProps, undefined> {
 
-    public get isDirectory() {
-        return this.props.activeFstItem.type === "directory";
-    }
+    public DataSourceProperties(props: { item: FstDataSource }): JSX.Element {
+        const { item } = props;
 
-    public get isFile() {
-        return this.props.activeFstItem.type === "file";
-    }
-
-    public get isDataSource() {
-        return this.props.activeFstItem.type === "dataSource";
-    }
-
-    public render() {
-        return !!this.props.activeFstItem && (
-            <div className="explorer-bar-box flex column explorer-properties">
-                <div className="header">
-                    Properties
-                </div>
-                <div className="body flex-auto flex column">
-                    {this.isDirectory ? (
-                        <div></div>
-                    ) : this.isFile ? (
-                        <div></div>
-                    ) : this.isDataSource && (
-                        this.renderDataSourceProperties()
-                    )}
-                </div>
-            </div>
-        );
-    }
-
-    public renderDataSourceProperties(): JSX.Element {
-        const item = this.props.activeFstItem as FstDataSource;
         return (
             <Form className="editor-properties-form flex-auto" model="fstItem">
                 <table>
@@ -96,6 +65,30 @@ export class ExplorerPropertiesClass extends React.Component<ExplorerPropertiesP
                     </tbody>
                 </table>
             </Form>
+        );
+    }
+
+    public render() {
+        const { DataSourceProperties } = this;
+        const { activeFstItem : item } = this.props;
+
+        return !!item && (
+            <div className="bar-box explorer-properties">
+                <div className="header">
+                    Properties
+                </div>
+                <div className="body scroll">
+                    <div className="background-box"/>
+                    {
+                        item.type === "file" ?
+                            <div/> :
+                        item.type === "directory" ?
+                            <div/> :
+                        item.type &&
+                            <DataSourceProperties item={item}/>
+                    }
+                </div>
+            </div>
         );
     }
 }

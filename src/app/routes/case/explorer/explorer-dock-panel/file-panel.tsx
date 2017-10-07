@@ -52,14 +52,6 @@ export class FilePanelClass extends React.Component<FilePanelProps, undefined> {
     public maxLength = 1024;
 
     public componentWillMount() {
-        this.checkContent();
-    }
-
-    public componentDidUpdate() {
-        this.checkContent();
-    }
-
-    public checkContent(): void {
         const { item, fstRoot, actions } = this.props;
 
         if (!item.content) {
@@ -88,24 +80,19 @@ export class FilePanelClass extends React.Component<FilePanelProps, undefined> {
         }
 
         return (
-            <div className="file-panel flex column">
+            <div className="file-panel box-container">
                 <Tabs tabs={tabs} forRouter="main.caseApp.filePanel"/>
-                <Router className="explorer-border flex-auto flex column"
+                <Router className="box padding scroll box-tabs"
                         name="main.caseApp.filePanel"
-                        defaultRoute="hex"
-                        style={{ marginTop: "-1px" }}>
+                        defaultRoute="hex">
                     <Route path="hex">
-                        <div className="hex-view flex-auto">
-                            <div className="selectable">
-                                { this.content.toString("hex") }
-                            </div>
+                        <div className="hex-view selectable">
+                            { this.content.toString("hex") }
                         </div>
                     </Route>
                     <Route path="string">
-                        <div className="selectable string-view flex-auto">
-                            <div className="selectable">
-                                { this.content.toString() }
-                            </div>
+                        <div className="string-view selectable">
+                            { this.content.toString() }
                         </div>
                     </Route>
                 </Router>

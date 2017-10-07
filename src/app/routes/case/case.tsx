@@ -13,6 +13,7 @@ import { ImgSpyState,
 import { updateSettings }   from "app/actions";
 
 import { Explorer }         from "./explorer";
+import { Timeline }         from "./timeline";
 import { FstWatcher }       from "./fst-watcher";
 
 
@@ -49,17 +50,23 @@ const mapDispatchToProps: MapDispatchToProps<CaseProps, InputCaseProps> =
 
 
 export class CaseClass extends React.Component<CaseProps, undefined> {
-    public static caseTab = { explorer: "archive" };
+    public static caseTab = {
+        explorer: "archive",
+        timeline: "clock-o"
+    };
 
     public render() {
         document.title = `ImgSpy Case - ${this.props.title}`;
         return (
-            <div className="case full-height">
+            <div className="case flex row full-height">
                 <FstWatcher/>
-                <WindowEvent event="close-settings" action={this.props.actions.updateSettings}/>
+                <WindowEvent event="close-settings"
+                             action={this.props.actions.updateSettings}/>
                 <LeftBar icons={CaseClass.caseTab} forRouter="main.caseApp"/>
-                <Router name="main.caseApp" defaultRoute="explorer">
+                <Router name="main.caseApp" defaultRoute="timeline"
+                        className="flex-auto">
                     <Route path="explorer"><Explorer/></Route>
+                    <Route path="timeline"><Timeline/></Route>
                 </Router>
             </div>
         );

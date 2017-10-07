@@ -1,0 +1,28 @@
+
+
+@mixin spy-base-tabs($theme) {
+
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+.tabs {
+    
+    .tab {
+        z-index: 10;
+        padding: 4px 14px;
+        border: 1px palette-900($palette) solid;
+        color: palette-400($palette);
+        font-weight: bold;
+        background-color: palette-600($palette);
+        cursor: pointer;
+
+        &.active {
+            color: inherit;
+            background-color: palette-700($palette);
+            border-bottom: none;
+        }
+    }
+}
+
+}

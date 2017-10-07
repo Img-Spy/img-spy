@@ -1,17 +1,26 @@
 import * as path            from "path";
 import { fork,
          ChildProcess }     from "child_process";
+import { Subject,
+         Observable }       from "rxjs";
 
 
 interface Identificable {
     id: string;
     type: string;
+
+    worker?: number;
+    keepAlive?: boolean;
     queue?: string;
 }
 
 
+export type QueryObservable<T extends Identificable> =
+    Observable<QueryQueueItem<T>>;
+
 interface QueryQueueItem<T extends Identificable> {
     message: T;
+    response?: T;
     cb: Function;
 }
 
@@ -51,6 +60,10 @@ class QueryQueue<T extends Identificable> {
         return item;
     }
 
+    public get(id: string): QueryQueueItem<T> {
+        return this.servingQueries[id];
+    }
+
     public get maxQueries(): number {
         return this._maxQueries;
     }
@@ -69,7 +82,10 @@ class Worker<T extends Identificable> {
         console.log(`Starting worker with id ${id}`);
         this.childProcess = fork(childProcessFile);
         this.childProcess.on("message", (message: T, sendHandle: any) => {
-            this.bussy = false;
+            if (message.keepAlive !== true) {
+                console.log(`Worker ${this.id} is now free.`);
+                this.bussy = false;
+            }
             onResponse(message, sendHandle);
         });
     }
@@ -80,6 +96,8 @@ class Worker<T extends Identificable> {
         }
 
         this.bussy = true;
+        console.log(`Send message ${message.type}-${message.id} to worker ${this.id}.`);
+        message.worker = this.id;
         this.childProcess.send(message);
     }
 
@@ -131,6 +149,7 @@ export abstract class ImgSpyWorker<T extends Identificable> {
     private queues: { [name: string]: QueryQueue<T> };
     private cluster: WorkerCluster<T>;
     private neededWorkers: number;
+    private message$: Subject<QueryQueueItem<T>>;
 
     constructor() {
         this.queues = {};
@@ -148,7 +167,8 @@ export abstract class ImgSpyWorker<T extends Identificable> {
             Object.keys(this.queues)
                 .reduce((acc, curr) => acc + this.queues[curr].maxQueries, 0);
 
-        // Build cluster
+        this.message$ = new Subject<QueryQueueItem<T>>();
+        this.handleMessages(this.message$);
     }
 
     public start() {
@@ -167,15 +187,23 @@ export abstract class ImgSpyWorker<T extends Identificable> {
         queue.queueMessage(queueItem);
     }
 
-    private onResponse(message: T, sendHandle: any) {
-        const queue = this.queues[message.queue];
-        const queueItem = queue.pop(message.id);
+    private onResponse(response: T, sendHandle: any) {
+        const queue = this.queues[response.queue];
+        let queueItem: QueryQueueItem<T>;
 
-        this.onMessageRetrieved(message, queueItem.cb, sendHandle);
+        if (response.keepAlive === true) {
+            queueItem = queue.get(response.id);
+        } else {
+            queueItem = queue.pop(response.id);
+        }
+
+        queueItem.response = response;
+        this.message$.next(queueItem);
+
         queue.nextQueueItem();
     }
 
     protected abstract get childProcessFile(): string;
-    protected abstract onMessageRetrieved(message: T, cb: Function, sendHandle: any);
+    protected abstract handleMessages(message$: QueryObservable<T>);
     protected createQueues(): void {}
 }

@@ -137,20 +137,13 @@ export class ResizePanelClass extends React.Component<ResizePanelProps, undefine
     }
 
     public onContainerAttached(container: HTMLDivElement) {
-        if (this.resizeSubscription) {
+        if (container === null) {
             this.resizeSubscription.unsubscribe();
-        }
-
-        this.resizeSubscription =
-            ResizeObservable
+        } else {
+            this.resizeSubscription = ResizeObservable
                 .create(container)
                 .debounceTime(10)
                 .subscribe(this.onResize);
-    }
-
-    public componentWillUnmount() {
-        if (this.resizeSubscription) {
-            this.resizeSubscription.unsubscribe();
         }
     }
 

@@ -1,0 +1,62 @@
+
+
+@mixin spy-base-fixed-table($theme) {
+
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+div.fixed-table {
+    > div {
+
+        div.fixed-table-cell {
+            padding-left: 5px;
+            background-color: palette-200($palette);
+            color: palette-800($palette);
+            width: 100%;
+            border-bottom: 2px solid;
+            border-right: 2px solid;
+            cursor: inherit;
+
+
+            &:last-child {
+                border-right: none;
+            }
+        }
+
+        &:not(.fixed-table-footer) {
+            .fixed-table-cell {
+                padding-top: 5px;
+                padding-bottom: 5px;
+            }
+        }
+
+        &.fixed-table-header {
+            .fixed-table-cell {
+                background-color: palette-400($palette);
+            }
+        }
+
+        &.fixed-table-body {
+            .fixed-table-row.selected {
+                div.fixed-table-cell {
+                    background-color: palette-A200($primary);
+                }
+            }
+
+            .fixed-table-row.clickable {
+                cursor: pointer;
+            }
+        }
+
+        &.fixed-table-footer {
+            flex: 1 1 auto;
+
+            div.fixed-table-cell {
+                border-bottom: none;
+            }
+        }
+    }
+}
+
+}

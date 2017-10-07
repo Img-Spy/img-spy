@@ -11,7 +11,8 @@ import settingsReducer          from "./settings.reducer";
 import settingsWindowReducer    from "./settings-window.reducer";
 import terminalReducer          from "./terminal.reducer";
 import fstWatcherReducer        from "./fst-watcher.reducer";
-import caseWindowReducer        from "./case-window.reducer";
+import explorerReducer          from "./explorer.reducer";
+import timelineReducer          from "./timeline.reducer";
 
 
 const reducersMap = {
@@ -26,7 +27,9 @@ const reducersMap = {
             terminal: terminalReducer(),
             settings: settingsReducer(initialSettings),
             fstRoot: fstWatcherReducer(folder, initialSettings),
-            caseWindow: caseWindowReducer(),
+            explorer: explorerReducer(),
+            timeline: timelineReducer(initialSettings),
+
             folder: handleActions<string, undefined>({}, folder),
             windowId: handleActions<string, undefined>({}, windowId),
 

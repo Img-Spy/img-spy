@@ -1,0 +1,35 @@
+
+
+@mixin spy-base-resize-panel($theme) {
+
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+.resize-panel {
+    height: 100%;
+    width: 100%;
+    display: flex;
+
+    &.horizontal {
+        flex-direction: row;
+
+        .resize-bar {
+            width: 5px;
+            height: 100%;
+            cursor: ew-resize;
+        }
+    }
+
+    &.vertical {
+        flex-direction: column;
+
+        .resize-bar {
+            height: 5px;
+            width: 100%;
+            cursor: ns-resize;
+        }
+    }
+}
+
+}

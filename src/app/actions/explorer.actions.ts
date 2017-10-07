@@ -4,6 +4,7 @@ import { DockPanelModel,
          FileSelector }         from "app/models";
 import { actions }              from "app/constants";
 
+
 export const selectFile = (selector?: FileSelector): Action<FileSelector> =>
     ({
         type: actions.CASE_SELECT_FILE,

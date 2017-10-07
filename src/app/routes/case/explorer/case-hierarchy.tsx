@@ -45,7 +45,7 @@ interface CaseHierarchyProps {
 const mapStateToProps: MapStateToProps<CaseHierarchyProps, InputCaseHierarchyProps> =
     (state: ImgSpyState, props) => {
         const { fstRoot } = state;
-        const { selectedFile } = state.caseWindow;
+        const { selectedFile } = state.explorer;
         let selectedItem;
         if (selectedFile !== undefined) {
             selectedItem = getFstItem(fstRoot, selectedFile.path, selectedFile.address);
@@ -206,11 +206,11 @@ export class CaseHierarchyClass extends React.Component<CaseHierarchyProps, unde
 
     public render() {
         return  (
-            <div className="explorer-bar-box case-hierarchy flex column">
+            <div className="bar-box case-hierarchy">
                 <div className="header">
                     Case structure
                 </div>
-                <div className="body margin x-scroll flex-auto">
+                <div className="body margin scroll">
                     <CaseHierarchyItem item={this.props.fstRoot.children.fisical} root={true}/>
                 </div>
             </div>

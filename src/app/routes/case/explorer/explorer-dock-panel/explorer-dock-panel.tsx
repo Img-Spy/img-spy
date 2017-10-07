@@ -54,7 +54,7 @@ interface DockPanelProps {
 
 const mapStateToProps: MapStateToProps<ExplorerDockPanelProps, InputExplorerDockPanelProps> =
     (state: ImgSpyState, props) => {
-        const { openPanels, activeFile } = state.caseWindow;
+        const { openPanels, activeFile } = state.explorer;
         const mapProps: ExplorerDockPanelProps = { openPanels, activeFile };
 
         return mapProps as any;

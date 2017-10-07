@@ -34,13 +34,23 @@ export const FST_UPDATE         = "FST_UPDATE";
 export const FST_UNLINK         = "FST_UNLINK";
 export const FST_OPEN           = "FST_OPEN";
 export const FST_TOGGLE_OPEN    = "FST_TOGGLE_OPEN";
-export const FST_HASH           = "FST_HASH";
+export const FST_ANALYZE        = "FST_HASH";
 export const FST_LIST           = "FST_LIST";
 export const FST_CONTENT        = "FST_CONTENT";
 export const FST_EXPORT         = "FST_EXPORT";
+
+// Timeline
+export const CRT_TIMELINE       = "CRT_TIMELINE";
+export const UPDATE_TIMELINE    = "UPDATE_TIMELINE";
+export const SELECT_TIMELINE    = "SELECT_TIMELINE";
+export const DELETE_TIMELINE    = "DELETE_TIMELINE";
+export const UPDAT_TBL_SETTINGS = "UPDAT_TBL_SETTINGS";
 
 // Resize actions
 export const RSZ_UPDATE         = "RSZ_UPDATE";
 export const RSZ_START          = "RSZ_START";
 export const RSZ_MOVE           = "RSZ_MOVE";
 export const RSZ_STOP           = "RSZ_STOP";
+
+// Graph actions
+export const UPDATE_GRAPH       = "UPDATE_GRAPH";

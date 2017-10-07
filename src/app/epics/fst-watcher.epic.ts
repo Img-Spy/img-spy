@@ -27,10 +27,11 @@ import { EpicObservable,
          FstDataSource,
          FstDirectory,
          DataSource,
+         Sink,
          ImgSpyState }              from "app/models";
 import { fstAdd,
          fstContent,
-         fstHash,
+         fstAnalyze,
          fstExport,
          deleteSource,
          updateSource,
@@ -38,9 +39,8 @@ import { fstAdd,
          pushTerminalLine }         from "app/actions";
 
 
-
 const dataSourceChange$ =
-    (action$: EpicObservable<FstAddPayload>, store): Observable<FstDataSource> =>
+    (action$: EpicObservable<any>, store): Observable<FstDataSource> =>
         action$.ofType(actions.FST_ADD)
             .filter(action => {
                 return action.payload.newItem.type === "dataSource";
@@ -51,39 +51,47 @@ const dataSourceChange$ =
             });
 
 
-const launchCalcHashEpic = (action$: EpicObservable<FstAddPayload>, store) =>
-    dataSourceChange$(action$, store)
-        .filter(dataSource => !dataSource.computedHash && !dataSource.computingHash)
-        .flatMap(dataSource => [
-            pushTerminalLine({ level: "notice", text: `Analyzing image '${dataSource.path}'...`}),
-            fstHash(dataSource)
-        ]);
+const analyzeDataSourceEpic = (action$: EpicObservable<FstAddPayload | FstDataSource>, store) => {
+    const sink = new Sink<FstDataSource>(
+        (dataSource) => `${dataSource.address}-${dataSource.path}`
+    );
 
+    return Observable.merge(
+        /// Launch analyze calculation
+        dataSourceChange$(action$, store)
+            .filter(dataSource => !dataSource.computedHash)
+            .filter(sink.start)
+            .flatMap(dataSource => [
+                pushTerminalLine({ level: "notice", text: `Analyzing image '${dataSource.path}'...`}),
+                fstAnalyze(dataSource)
+            ]),
 
-const calcHashEpic = (action$: EpicObservable<FstDataSource>, store) =>
-    action$.ofType(actions.FST_HASH)
-        .mergeMap(action => {
-            const { path } = action.payload;
-            return ApiObservable
-                .create<AnalysisInfo>((api, cb) => api.analyzeImage(path, cb))
-                .map((info) => ({
-                    type: "dataSource",
-                    path,
-                    computedHash: info.hash,
-                    imgType: info.type,
-                    partitions: info.partitions,
-                    computingHash: false
-                }) as FstDataSource);
-        })
-        .flatMap((fstDataSource) => {
-            return [
-                fstAdd(fstDataSource),
-                pushTerminalLine({
-                    level: "notice",
-                    text: `md5(${fstDataSource.path}) = ${fstDataSource.computedHash}`
-                }),
-            ];
-        });
+        /// Analyze
+        (action$.ofType(actions.FST_ANALYZE) as EpicObservable<FstDataSource>)
+            .mergeMap(action => {
+                const { path } = action.payload;
+                return ApiObservable
+                    .create<AnalysisInfo>((api, cb) => api.analyzeImage(path, cb))
+                    .filter(sink.end(action.payload))
+                    .map((info) => ({
+                        type: "dataSource",
+                        path,
+                        computedHash: info.hash,
+                        imgType: info.type,
+                        partitions: info.partitions,
+                    }) as FstDataSource);
+            })
+            .flatMap((fstDataSource) => {
+                return [
+                    fstAdd(fstDataSource),
+                    pushTerminalLine({
+                        level: "notice",
+                        text: `md5(${fstDataSource.path}) = ${fstDataSource.computedHash}`
+                    }),
+                ];
+            }),
+    );
+};
 
 
 const virtualMountEpic = (action$: EpicObservable<FstAddPayload>, store) =>
@@ -135,14 +143,23 @@ const virtualMountEpic = (action$: EpicObservable<FstAddPayload>, store) =>
         });
 
 
-const virtualListEpic = (action$: EpicObservable<FstDirectory>, store) =>
-    action$.ofType(actions.FST_LIST)
+const virtualListEpic = (action$: EpicObservable<FstDirectory>, store) => {
+    const sink = new Sink<Action<FstDirectory>>(
+        (action) => `${action.payload.address}-${action.payload.path}`
+    );
+
+    return action$.ofType(actions.FST_LIST)
+        .filter(sink.start)
         .mergeMap(action => {
-            const { path, imgPath, offset, inode } = action.payload;
+            const state: ImgSpyState = store.getState();
+            const { path, imgPath, offset, inode, address } = action.payload;
+            const item = getFstItem(state.fstRoot, path, address);
+
             return ApiObservable
                 .create<ImgFile[]>((api, cb) => {
                     api.listImage(imgPath, offset, inode, cb);
                 })
+                .filter(sink.end(action))
                 .map(files => ({ path, offset, imgPath, files }) );
         })
         .flatMap(acc => {
@@ -179,7 +196,7 @@ const virtualListEpic = (action$: EpicObservable<FstDirectory>, store) =>
 
             return actions;
         });
-
+};
 
 const copySourceIntoSettingsEpic = (action$: EpicObservable<FstAddPayload>, store) =>
     dataSourceChange$(action$, store)
@@ -231,11 +248,18 @@ const exportFileEpic = (action$: EpicObservable<FstExportPayload>, store) =>
         });
 
 
-const getContentEpic = (action$: EpicObservable<FstFile>, store) =>
-    action$.ofType(actions.FST_CONTENT)
+const getContentEpic = (action$: EpicObservable<FstFile>, store) => {
+    const fileSink = new Sink<Action<FstFile>>(
+        (action) => `${action.payload.address}-${action.payload.path}`
+    );
+
+    return action$.ofType(actions.FST_CONTENT)
+        .filter(fileSink.start)
         .mergeMap(action => {
             const state: ImgSpyState = store.getState();
-            return FstObservable.getContent(state.folder, action.payload);
+            return FstObservable
+                .getContent(state.folder, action.payload)
+                .filter(fileSink.end(action));
         })
         .map((payload) => fstAdd({
                 path: payload.file.path,
@@ -245,7 +269,7 @@ const getContentEpic = (action$: EpicObservable<FstFile>, store) =>
                 content: payload.content
             }, payload.file.address)
         );
-
+};
 
 const removeFileEpic = (action$: EpicObservable<FstUnlinkPayload>, store) =>
     action$.ofType(actions.FST_UNLINK)
@@ -259,12 +283,11 @@ const removeFileEpic = (action$: EpicObservable<FstUnlinkPayload>, store) =>
 
 export default () =>
     (combineEpics as any)(
-        launchCalcHashEpic,
+        analyzeDataSourceEpic,
         removeFileEpic,
         exportFileEpic,
         getContentEpic,
         virtualMountEpic,
         virtualListEpic,
-        calcHashEpic,
         copySourceIntoSettingsEpic
     );

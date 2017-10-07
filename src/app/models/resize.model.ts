@@ -1,6 +1,5 @@
 import { Observable,
          Observer }                     from "rxjs";
-import * as elementResizeDetectorMaker  from "element-resize-detector";
 
 
 export type ResizeModelMap =  { [name: string]: ResizeModel };
@@ -19,6 +18,9 @@ export interface ResizeModel {
 export interface ResizeSize {
     height: number;
     width: number;
+
+    scrollHeight: number;
+    scrollWidth: number;
 
     heightStart: number;
     widthStart: number;
@@ -51,35 +53,4 @@ export interface StartResizePayload {
 export interface ResizePayload {
     name: string;
     mouse: MouseEvent;
-}
-
-const erdUltraFast = elementResizeDetectorMaker({
-    strategy: "scroll" // <- For ultra performance.
-});
-
-export class ResizeObservable {
-
-    public static create(element: HTMLElement): Observable<ResizeSize> {
-
-        const resize$ = Observable.create((observer: Observer<ResizeSize>) => {
-
-            erdUltraFast.listenTo(element, () => {
-                const { clientHeight: height,
-                        clientWidth: width,
-                        offsetLeft: widthStart,
-                        offsetTop: heightStart } = element;
-
-                observer.next({
-                    height,
-                    width,
-                    heightStart,
-                    widthStart
-                });
-            });
-
-        });
-
-        return resize$;
-    }
-
 }

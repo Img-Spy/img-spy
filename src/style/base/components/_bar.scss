@@ -1,0 +1,53 @@
+
+
+@mixin spy-base-bar($theme) {
+    
+$palette: theme-palette($theme);
+$primary: theme-primary($theme);
+$warn:    theme-warn($theme);
+
+div.bar {
+
+    div.bar-box {
+        min-height: 200px;
+        height: 100%;
+        @include flex-column;
+
+        > .header {
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: palette-600($palette);
+            border: 1px palette-700($palette) solid;
+            border-left: none;
+        }
+
+        > .body {
+            flex: 1 1 auto;
+            position: relative;
+            display: flex;
+
+            > * {
+                position: absolute;
+            }
+
+            .background-box {
+                position: relative;
+                border: 1px palette-300($palette) solid;
+                flex: 1 1 auto;
+            }
+    
+            &.margin {
+                > *:not(.background-box) {
+                    margin: 5px 10px;
+                }
+            }
+
+            &.scroll {
+                overflow: auto;
+            }
+        }
+
+    }
+}
+
+}

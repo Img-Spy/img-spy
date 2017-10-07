@@ -6,7 +6,7 @@ export interface FileSelector {
     address: string;
 }
 
-export interface CaseWindowModel {
+export interface ExplorerModel {
     selectedFile: FileSelector;
     activeFile: FileSelector;
 

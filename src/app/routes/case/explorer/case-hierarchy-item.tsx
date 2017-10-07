@@ -17,12 +17,16 @@ import { ImgSpyState,
          FstFile,
          FstRoot,
          FstDataSource,
+         CrtTimelinePayload,
          FstDirectory }         from "app/models";
 import { fstToggleOpen,
          fstList,
          fstExport,
          openDockPanel,
          activateFile,
+         createTimeline,
+         Navigator,
+         createNavigator,
          selectFile }           from "app/actions";
 
 
@@ -36,8 +40,11 @@ interface CaseHierarchyItemActions {
     fstList: (dir: FstDirectory) => void;
     fstExport: (file: FstFile, path: string) => void;
 
+    createTimeline: (data: CrtTimelinePayload) => void;
+
     selectFile: (item?: FstItem) => void;
     activateFile: (item?: FstItem) => void;
+    toolsNavigator: Navigator<void>;
     openDockPanel: (panel: DockPanelModel) => void;
 }
 
@@ -53,7 +60,7 @@ interface CaseHierarchyItemProps {
 
 const mapStateToProps: MapStateToProps<CaseHierarchyItemProps, InputCaseHierarchyItemProps> =
     (state: ImgSpyState, props) => {
-        const { selectedFile, activeFile } = state.caseWindow;
+        const { selectedFile, activeFile } = state.explorer;
         const { fstRoot, folder } = state;
         const mapProps: CaseHierarchyItemProps = { selectedFile, activeFile, fstRoot, folder };
 
@@ -66,6 +73,10 @@ const mapDispatchToProps: MapDispatchToProps<CaseHierarchyItemProps, InputCaseHi
             fstToggleOpen:  bindActionCreators(fstToggleOpen,   dispatch),
             fstList:        bindActionCreators(fstList,         dispatch),
             fstExport:      bindActionCreators(fstExport,       dispatch),
+
+            createTimeline: bindActionCreators(createTimeline,  dispatch),
+            toolsNavigator: bindActionCreators(createNavigator("main.caseApp"),
+                                               dispatch),
 
             selectFile:     bindActionCreators(selectFile,      dispatch),
             activateFile:   bindActionCreators(activateFile,    dispatch),
@@ -136,7 +147,7 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
     }
 
     public componentWillMount() {
-        const { item, folder } = this.props;
+        const { item, folder, actions } = this.props;
         this.menu = new remote.Menu();
         if (item.type === "file") {
             this.menu.append(new remote.MenuItem({
@@ -148,13 +159,32 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
                     }, (path) => {
                         console.log("Export", path);
                         if (path) {
-                            this.props.actions.fstExport(item, path);
+                            actions.fstExport(item, path);
                         }
                     });
                 }
             }));
-
         }
+
+        if (item.address === "virtual" && item.type === "directory") {
+            this.menu.append(new remote.MenuItem({
+                label: "Timeline",
+                click: () => {
+                    actions.createTimeline({
+                        name: item.name,
+                        path: item.path,
+                        imgPath: item.imgPath,
+                        date: new Date(),
+
+                        offset: item.offset,
+                        inode: item.inode
+                    });
+
+                    actions.toolsNavigator("timeline");
+                }
+            }));
+        }
+
         window.addEventListener("click", this.unselectFile);
     }
 
@@ -223,8 +253,9 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
 
         return (
             <div key="children" className={"children" + (item.isOpen ? "" : " closed")}>
-                { getSortedChildren(children).map((childName: string , i) =>
-                    <CaseHierarchyItem key={i} item={children[childName]}/>
+                { getSortedChildren(children).map((childName: string) =>
+                    <CaseHierarchyItem key={childName}
+                                       item={children[childName]}/>
                 )}
             </div>
         );

@@ -2,30 +2,30 @@ import { handleActions,
          Action }               from "redux-actions";
 import * as deepcopy            from "deepcopy";
 
-import { CaseWindowModel,
+import { ExplorerModel,
          FileSelector,
          DockPanelModel }       from "app/models";
 import { actions }              from "app/constants";
 
 
 export default () => {
-    const initialState: CaseWindowModel = {
+    const initialState: ExplorerModel = {
         selectedFile: undefined,
         activeFile: { path: "", address: "fisical" },
 
         openPanels: {}
     };
-    return handleActions<CaseWindowModel, FileSelector | DockPanelModel | string>({
+    return handleActions<ExplorerModel, FileSelector | DockPanelModel | string>({
             [actions.CASE_SELECT_FILE]:
-                (state: CaseWindowModel, action: Action<FileSelector>): CaseWindowModel =>
+                (state: ExplorerModel, action: Action<FileSelector>): ExplorerModel =>
                     ({ ...state, selectedFile: action.payload }),
 
             [actions.CASE_ACTIVATE_FILE]:
-                (state: CaseWindowModel, action: Action<FileSelector>): CaseWindowModel =>
+                (state: ExplorerModel, action: Action<FileSelector>): ExplorerModel =>
                     ({ ...state, activeFile: action.payload }),
 
             [actions.CASE_OPEN_PANEL]:
-                (state: CaseWindowModel, action: Action<DockPanelModel>): CaseWindowModel => {
+                (state: ExplorerModel, action: Action<DockPanelModel>): ExplorerModel => {
                     const panel = action.payload;
 
                     return {
@@ -42,7 +42,7 @@ export default () => {
                 },
 
             [actions.CASE_CLOSE_PANEL]:
-                (state: CaseWindowModel, action: Action<string>): CaseWindowModel => {
+                (state: ExplorerModel, action: Action<string>): ExplorerModel => {
                     const { [action.payload]: delPanel, ...panels } = state.openPanels;
 
                     return {
@@ -53,7 +53,7 @@ export default () => {
                 },
 
             [actions.CASE_UPDATE_PANEL]:
-                (state: CaseWindowModel, action: Action<DockPanelModel>): CaseWindowModel => {
+                (state: ExplorerModel, action: Action<DockPanelModel>): ExplorerModel => {
                     const { id, props } = action.payload;
                     const panelToUpdate = state.openPanels[id];
                     if (!panelToUpdate) {

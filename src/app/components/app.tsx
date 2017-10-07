@@ -22,7 +22,10 @@ interface AppProps {
 
 const mapStateToProps: MapStateToProps<AppProps, InputAppProps> =
     (state: ImgSpyState, props) => {
-        const { theme } = state.settings;
+        let theme = "dark";
+        if (state.settings) {
+            theme = state.settings.theme;
+        }
         const mapProps: AppProps = {
             className: state.navigate.main.path,
             theme
