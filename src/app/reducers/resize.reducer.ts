@@ -62,13 +62,37 @@ const timelineResults: ResizeModel = {
     ]
 };
 
+const search: ResizeModel = {
+    size: undefined,
+    name: "search",
+    direction: "horizontal",
+    items: [
+        { current: { value: 20, units: "percent" } },
+        { current: { value: 80, units: "percent" } },
+    ]
+};
+
+const searchBar: ResizeModel = {
+    size: undefined,
+    name: "searchBar",
+    direction: "vertical",
+    items: [
+        { current: { value: 40, units: "percent" } },
+        { current: { value: 60, units: "percent" } },
+    ]
+};
+
 export default () => {
     const initialState: ResizeModelMap = {
         explorerLeftBar,
         explorer,
         explorerEditor,
+
         timeline,
-        timelineResults
+        timelineResults,
+
+        search,
+        searchBar
     };
     return handleActions<ResizeModelMap, UpdateResizePayload | StartResizePayload | ResizePayload>({
             [actions.RSZ_UPDATE]:

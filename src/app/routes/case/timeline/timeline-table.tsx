@@ -63,10 +63,6 @@ export class TimelineTableClass
         //
     }
 
-    public componentDidMount() {
-        console.log(this.refs);
-    }
-
     public render(): JSX.Element {
         const { timeline, tableProps, actions } = this.props;
 
@@ -106,8 +102,7 @@ export class TimelineTableClass
             }
         };
 
-        console.log("Redraw");
-        return <ReactTable ref="" {...fullTableProps}/>;
+        return <ReactTable {...fullTableProps}/>;
     }
 }
 

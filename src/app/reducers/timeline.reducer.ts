@@ -1,5 +1,3 @@
-import * as path                from "path";
-import * as fs                  from "fs";
 import { handleActions,
          Action }               from "redux-actions";
 
@@ -77,12 +75,11 @@ const selectTimelineReducer = (
     action: Action<string>
 ): TimelinesModel => {
     const { payload: selected } = action;
-    const { timelines } = state;
 
     return { ...state, selected };
 };
 
-const updateTableSettings = (
+const updateTimelineTableReducer = (
     state: TimelinesModel,
     action: Action<Partial<TableSettings>>
 ): TimelinesModel => {
@@ -109,11 +106,11 @@ export default (settings: SettingsModel) => {
      };
 
     return handleActions<TimelinesModel, any>({
-        [actions.CRT_TIMELINE]: createTimelineReducer,
+        [actions.CREATE_TIMELINE]: createTimelineReducer,
         [actions.UPDATE_TIMELINE]: updateTimelineReducer,
         [actions.DELETE_TIMELINE]: deleteTimelineReducer,
         [actions.SELECT_TIMELINE]: selectTimelineReducer,
-        [actions.UPDAT_TBL_SETTINGS]: updateTableSettings
+        [actions.TABLE_TIMELINE]:  updateTimelineTableReducer
 
     }, initialState);
 };

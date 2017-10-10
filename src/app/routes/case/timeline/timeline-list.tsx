@@ -52,9 +52,9 @@ export class TimelineListClass extends React.Component<TimelineListProps, undefi
         //
     }
 
-    public get timelines() {
+    public get timelinesList(): Array<TimelineInfo> {
         return Object
-            .keys(this.props.timelines)
+            .keys(this.props.timelines || {})
             .map(path => this.props.timelines[path])
             .sort((tA, tB) => (
                 tA.date > tB.date ? 1 :
@@ -69,6 +69,7 @@ export class TimelineListClass extends React.Component<TimelineListProps, undefi
                 children,
                 actions,
                 ...divProps } = this.props;
+        const { timelinesList } = this;
 
         return (
             <div { ...divProps } className={`bar ${className}`}>
@@ -76,7 +77,7 @@ export class TimelineListClass extends React.Component<TimelineListProps, undefi
                     <div className="header">Timeline list</div>
                     <div className="body scroll">
                         <div className="timeline-items">
-                            { this.timelines.map(timeline =>
+                            { timelinesList.map(timeline =>
                                 <TimelineItem key={timeline.path}
                                               timeline={timeline}/>
                             )}

@@ -1,7 +1,7 @@
 import { TimelineItem }     from "tsk-js";
 
+import { TableSettings }    from "./table.model";
 
-export type TableSettings = any;
 
 export interface TimelinesModel {
     selected: string;

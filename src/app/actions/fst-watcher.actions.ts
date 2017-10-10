@@ -30,6 +30,9 @@ export const fstToggleOpen = (selector: FileSelector): Action<FstUnlinkPayload> 
 export const fstOpen = (path: string, address?: string): Action<FstUnlinkPayload> =>
     ({ type: actions.FST_OPEN, payload: { path, address } });
 
+export const fstOpenOut = (payload: FstItem): Action<FstItem> =>
+    ({ type: actions.FST_OPEN_OUT, payload });
+
 export const fstAnalyze = (payload: FstItem): Action<FstItem> =>
     ({ type: actions.FST_ANALYZE, payload });
 

@@ -15,6 +15,7 @@ import { updateSettings }   from "app/actions";
 import { Explorer }         from "./explorer";
 import { Timeline }         from "./timeline";
 import { FstWatcher }       from "./fst-watcher";
+import { Search }           from "./search";
 
 
 interface InputCaseProps {
@@ -52,7 +53,8 @@ const mapDispatchToProps: MapDispatchToProps<CaseProps, InputCaseProps> =
 export class CaseClass extends React.Component<CaseProps, undefined> {
     public static caseTab = {
         explorer: "archive",
-        timeline: "clock-o"
+        timeline: "clock-o",
+        search:   "search"
     };
 
     public render() {
@@ -63,10 +65,11 @@ export class CaseClass extends React.Component<CaseProps, undefined> {
                 <WindowEvent event="close-settings"
                              action={this.props.actions.updateSettings}/>
                 <LeftBar icons={CaseClass.caseTab} forRouter="main.caseApp"/>
-                <Router name="main.caseApp" defaultRoute="timeline"
+                <Router name="main.caseApp" defaultRoute="explorer"
                         className="flex-auto">
                     <Route path="explorer"><Explorer/></Route>
                     <Route path="timeline"><Timeline/></Route>
+                    <Route path="search"><Search/></Route>
                 </Router>
             </div>
         );

@@ -121,7 +121,7 @@ const searchImage =
                 const resp: SearchImgCallbackMessage = {
                     ...message,
                     type: "searchImgCallback",
-                    keepAlive: !result,
+                    keepAlive: !!result,
                     content: result
                 };
                 process.send(resp);

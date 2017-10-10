@@ -1,7 +1,9 @@
 import { PartitionInfo }        from "tsk-js";
 
 import { dataSourceTypes }      from "app/constants";
+
 import { TimelineInfo }         from "./timeline.model";
+import { SearchInfo }           from "./search.model";
 
 
 export type Theme = "dark" | "light";
@@ -19,6 +21,10 @@ export interface SettingsModel {
 
     timelines: {
         [key: string]: TimelineInfo
+    };
+
+    searchResults: {
+        [key: string]: SearchInfo
     };
 
     theme: Theme;

@@ -13,6 +13,7 @@ import terminalReducer          from "./terminal.reducer";
 import fstWatcherReducer        from "./fst-watcher.reducer";
 import explorerReducer          from "./explorer.reducer";
 import timelineReducer          from "./timeline.reducer";
+import searchReducer            from "./search.reducer";
 
 
 const reducersMap = {
@@ -29,13 +30,15 @@ const reducersMap = {
             fstRoot: fstWatcherReducer(folder, initialSettings),
             explorer: explorerReducer(),
             timeline: timelineReducer(initialSettings),
+            searchView: searchReducer(initialSettings),
 
             folder: handleActions<string, undefined>({}, folder),
             windowId: handleActions<string, undefined>({}, windowId),
 
             /// Forms
             ...createForms({
-                fstItem: {}
+                fstItem: {},
+                searchForm: {}
             })
         };
     },

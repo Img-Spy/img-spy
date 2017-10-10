@@ -7,6 +7,7 @@ import { connect,
 import { remote }               from "electron";
 
 import { ImgSpyState,
+         getFullPath,
          TimelineInfo }         from "app/models";
 import { ResizePanel }          from "app/components";
 import { selectTimeline,
@@ -86,7 +87,7 @@ export class TimelineItemClass extends React.Component<TimelineItemProps, undefi
 
     private get className(): string {
         const { selectedTimeline, timeline } = this.props;
-        return "timeline-item" +
+        return "timeline-item dots" +
             (selectedTimeline === timeline.path ? " selected" : "");
     }
 
@@ -107,9 +108,11 @@ export class TimelineItemClass extends React.Component<TimelineItemProps, undefi
                 children,
                 actions,
                 ...divProps } = this.props;
+        const completePath = getFullPath(timeline);
 
         return (
             <div key={timeline.path} className={this.className}
+                 title={completePath}
                  onContextMenu={this.onContextMenu}
                  onClick={e => this.onTimelineClick(e, timeline)}>
                 {timeline.name}

@@ -13,6 +13,7 @@ export { selectSource,
 export { pushTerminalLine }     from "./terminal.actions";
 export { fstAdd,
          fstOpen,
+         fstOpenOut,
          fstToggleOpen,
          fstAnalyze,
          fstUnlink,
@@ -32,7 +33,12 @@ export { createTimeline,
          updateTimeline,
          selectTimeline,
          deleteTimeline,
-         updateTableSettings }  from "./timeline.actions";
+         updateTimelineTable }  from "./timeline.actions";
+export { createSearch,
+         updateSearch,
+         selectSearch,
+         deleteSearch,
+         updateSearchTable }    from "./search.actions";
 
 
 interface NavigatorAction<T> {

@@ -16,6 +16,7 @@ export { getFstItem,
          getFstChildren,
          getSortedChildren,
          getMountPoint,
+         getFullPath,
          hasFstItem,
          isFstSelected,
          FstType,
@@ -49,13 +50,14 @@ export { FstObservable,
          ApiObservable }        from "./observable.model";
 export { TabModel }             from "./tabs.model";
 export { TimelinesModel,
-         TableSettings,
          CrtTimelinePayload,
          TimelineInfo }         from "./timeline.model";
+export { SearchFormModel,
+         CrtSearchPayload,
+         SearchInfo,
+         SearchItem,
+         SearchModel }          from "./search.model";
+export { TableSettings }        from "./table.model";
 export { GraphInfo,
          GraphModel }           from "./graph.model";
 export { Sink }                 from "./sink.model";
-
-// export type Partial<T> = {
-//     [P in keyof T]?: T[P];
-// };

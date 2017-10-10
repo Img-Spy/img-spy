@@ -1,10 +1,12 @@
 import * as fs                      from "fs";
+import { Store }                    from "redux";
 import { Observable,
          Observer }                 from "rxjs";
 import { Action }                   from "redux-actions";
 import { actions as formActions }   from "react-redux-form";
 import { combineEpics }             from "redux-observable";
 import { ImgFile }                  from "tsk-js";
+import { shell, remote }                    from "electron";
 
 import { AnalysisInfo }             from "main/models";
 
@@ -36,22 +38,29 @@ import { fstAdd,
          deleteSource,
          updateSource,
          applySettings,
+         doNothing,
          pushTerminalLine }         from "app/actions";
 
 
-const dataSourceChange$ =
-    (action$: EpicObservable<any>, store): Observable<FstDataSource> =>
-        action$.ofType(actions.FST_ADD)
-            .filter(action => {
-                return action.payload.newItem.type === "dataSource";
-            })
-            .map(action => {
-                const state: ImgSpyState = store.getState();
-                return getFstItem(state.fstRoot, action.payload.newItem.path) as FstDataSource;
-            });
+const dataSourceChange$ = (
+    action$: EpicObservable<any>,
+    store: Store<ImgSpyState>
+): Observable<FstDataSource> =>
+action$
+    .ofType(actions.FST_ADD)
+    .filter(action => {
+        return action.payload.newItem.type === "dataSource";
+    })
+    .map(action => {
+        const state = store.getState();
+        return getFstItem(state.fstRoot, action.payload.newItem.path) as FstDataSource;
+    });
 
 
-const analyzeDataSourceEpic = (action$: EpicObservable<FstAddPayload | FstDataSource>, store) => {
+const analyzeDataSourceEpic = (
+    action$: EpicObservable<FstAddPayload | FstDataSource>,
+    store: Store<ImgSpyState>
+) => {
     const sink = new Sink<FstDataSource>(
         (dataSource) => `${dataSource.address}-${dataSource.path}`
     );
@@ -67,7 +76,8 @@ const analyzeDataSourceEpic = (action$: EpicObservable<FstAddPayload | FstDataSo
             ]),
 
         /// Analyze
-        (action$.ofType(actions.FST_ANALYZE) as EpicObservable<FstDataSource>)
+        (action$ as EpicObservable<FstDataSource>)
+            .ofType(actions.FST_ANALYZE)
             .mergeMap(action => {
                 const { path } = action.payload;
                 return ApiObservable
@@ -94,64 +104,71 @@ const analyzeDataSourceEpic = (action$: EpicObservable<FstAddPayload | FstDataSo
 };
 
 
-const virtualMountEpic = (action$: EpicObservable<FstAddPayload>, store) =>
-    dataSourceChange$(action$, store)
-        .filter(dataSource => {
-            const state: ImgSpyState = store.getState();
-            return !state.fstRoot.children.virtual.children[dataSource.path];
-        })
-        .map(fstDataSource => {
-            const mountPoint = getMountPoint(fstDataSource);
-            let children: { [name: string]: FstItem };
-            if (fstDataSource.imgType === "disk" ) {
-                children = fstDataSource
-                    .partitions
-                    .map((partition): FstDirectory => ({
-                        name: partition.description,
-                        path: `${mountPoint}/${partition.description}`,
-                        type: "directory",
-                        address: "virtual",
+const virtualMountEpic = (
+    action$: EpicObservable<FstAddPayload>,
+    store: Store<ImgSpyState>
+) =>
+dataSourceChange$(action$, store)
+    .filter(dataSource => {
+        const state = store.getState();
+        return !state.fstRoot.children.virtual.children[dataSource.path];
+    })
+    .map(fstDataSource => {
+        const mountPoint = getMountPoint(fstDataSource);
+        let children: { [name: string]: FstItem };
+        if (fstDataSource.imgType === "disk" ) {
+            children = fstDataSource
+                .partitions
+                .map((partition): FstDirectory => ({
+                    name: partition.description,
+                    path: `${mountPoint}/${partition.description}`,
+                    type: "directory",
+                    address: "virtual",
 
-                        imgPath: fstDataSource.path,
-                        offset: partition.start,
-                        inode: undefined,
+                    imgPath: fstDataSource.path,
+                    offset: partition.start,
+                    inode: undefined,
 
-                        isOpen: false,
-                        canOpen: partition.hasFs,
-                        children: {}
-                    }))
-                    .reduce((acc: any, child: FstItem) => {
-                        acc[child.name] = child;
-                        return acc;
-                    }, {});
-            } else {
-                children = {};
-            }
+                    isOpen: false,
+                    canOpen: partition.hasFs,
+                    children: {}
+                }))
+                .reduce((acc: any, child: FstItem) => {
+                    acc[child.name] = child;
+                    return acc;
+                }, {});
+        } else {
+            children = {};
+        }
 
-            const virtualDsDirectory: FstDirectory = {
-                path: mountPoint,
-                imgPath: fstDataSource.path,
-                name: mountPoint,
-                address: "virtual",
+        const virtualDsDirectory: FstDirectory = {
+            path: mountPoint,
+            imgPath: fstDataSource.path,
+            name: mountPoint,
+            address: "virtual",
 
-                type: "directory",
-                isOpen: false,
-                children
-            };
+            type: "directory",
+            isOpen: false,
+            children
+        };
 
-            return fstAdd(virtualDsDirectory, "virtual");
-        });
+        return fstAdd(virtualDsDirectory, "virtual");
+    });
 
 
-const virtualListEpic = (action$: EpicObservable<FstDirectory>, store) => {
+const virtualListEpic = (
+    action$: EpicObservable<FstDirectory>,
+    store: Store<ImgSpyState>
+) => {
     const sink = new Sink<Action<FstDirectory>>(
         (action) => `${action.payload.address}-${action.payload.path}`
     );
 
-    return action$.ofType(actions.FST_LIST)
+    return action$
+        .ofType(actions.FST_LIST)
         .filter(sink.start)
         .mergeMap(action => {
-            const state: ImgSpyState = store.getState();
+            const state = store.getState();
             const { path, imgPath, offset, inode, address } = action.payload;
             const item = getFstItem(state.fstRoot, path, address);
 
@@ -198,57 +215,68 @@ const virtualListEpic = (action$: EpicObservable<FstDirectory>, store) => {
         });
 };
 
-const copySourceIntoSettingsEpic = (action$: EpicObservable<FstAddPayload>, store) =>
-    dataSourceChange$(action$, store)
-        .filter((fstDataSource) => { /* Check if the file is not deleted */
-            const state: ImgSpyState = store.getState();
-            return hasFstItem(state.fstRoot, fstDataSource.path);
+
+const copySourceIntoSettingsEpic = (
+    action$: EpicObservable<FstAddPayload>,
+    store: Store<ImgSpyState>
+) =>
+dataSourceChange$(action$, store)
+    .filter((fstDataSource) => { /* Check if the file is not deleted */
+        const state: ImgSpyState = store.getState();
+        return hasFstItem(state.fstRoot, fstDataSource.path);
+    })
+    .map((fstDataSource) => updateSource({
+            name: fstDataSource.name,
+            path: fstDataSource.path,
+            imgType: fstDataSource.imgType,
+
+            hash: fstDataSource.hash,
+            computedHash: fstDataSource.computedHash,
+            partitions: fstDataSource.partitions
         })
-        .map((fstDataSource) => updateSource({
-                name: fstDataSource.name,
-                path: fstDataSource.path,
-                imgType: fstDataSource.imgType,
-
-                hash: fstDataSource.hash,
-                computedHash: fstDataSource.computedHash,
-                partitions: fstDataSource.partitions
-            })
-        );
+    );
 
 
-const exportFileEpic = (action$: EpicObservable<FstExportPayload>, store) =>
-    action$.ofType(actions.FST_EXPORT)
-        .mergeMap(action => {
-            const state: ImgSpyState = store.getState();
-            const { file: selector, path } = action.payload;
-            const file = getFstItem(
-                state.fstRoot,
-                selector.path,
-                selector.address
-            ) as FstFile;
-            let newAction$;
+const exportFileEpic = (
+    action$: EpicObservable<FstExportPayload>,
+    store: Store<ImgSpyState>
+) =>
+action$
+    .ofType(actions.FST_EXPORT)
+    .mergeMap(action => {
+        const state: ImgSpyState = store.getState();
+        const { file: selector, path } = action.payload;
+        const file = getFstItem(
+            state.fstRoot,
+            selector.path,
+            selector.address
+        ) as FstFile;
+        let newAction$;
 
-            if (!file.content) {
-                newAction$ = Observable.from([
-                    fstContent(file),
-                    fstExport(selector, path)
-                ]);
-            } else {
-                newAction$ = FstObservable
-                    .writeFile(file, path)
-                    .mapTo(
-                        pushTerminalLine({
-                            level: "notice",
-                            text: `Exported file '${file.name}'`
-                        })
-                    );
-            }
+        if (!file.content) {
+            newAction$ = Observable.from([
+                fstContent(file),
+                fstExport(selector, path)
+            ]);
+        } else {
+            newAction$ = FstObservable
+                .writeFile(file, path)
+                .mapTo(
+                    pushTerminalLine({
+                        level: "notice",
+                        text: `Exported file '${file.name}'`
+                    })
+                );
+        }
 
-            return newAction$;
-        });
+        return newAction$;
+    });
 
 
-const getContentEpic = (action$: EpicObservable<FstFile>, store) => {
+const getContentEpic = (
+    action$: EpicObservable<FstFile>,
+    store: Store<ImgSpyState>
+) => {
     const fileSink = new Sink<Action<FstFile>>(
         (action) => `${action.payload.address}-${action.payload.path}`
     );
@@ -271,14 +299,39 @@ const getContentEpic = (action$: EpicObservable<FstFile>, store) => {
         );
 };
 
-const removeFileEpic = (action$: EpicObservable<FstUnlinkPayload>, store) =>
-    action$.ofType(actions.FST_UNLINK)
-        .filter((action) => {
-            const state: ImgSpyState = store.getState();
-            const dataSource = state.settings.sources[action.payload.path];
-            return !!dataSource;
-        })
-        .map((action) => deleteSource(action.payload.path));
+
+const openOutFileEpic = (
+    action$: EpicObservable<FstItem>,
+    store: Store<ImgSpyState>
+) =>
+action$
+    .ofType(actions.FST_OPEN_OUT)
+    .filter((action) => {
+        const file = action.payload;
+        return file.address === "fisical";
+    })
+    .map((action) => {
+        const { folder } = store.getState();
+        const file = action.payload;
+        const fullPath = `${folder}/${file.path}`;
+        remote.shell.openItem(fullPath);
+
+        return doNothing();
+    });
+
+
+const removeFileEpic = (
+    action$: EpicObservable<FstUnlinkPayload>,
+    store: Store<ImgSpyState>
+) =>
+action$
+    .ofType(actions.FST_UNLINK)
+    .filter((action) => {
+        const state: ImgSpyState = store.getState();
+        const dataSource = state.settings.sources[action.payload.path];
+        return !!dataSource;
+    })
+    .map((action) => deleteSource(action.payload.path));
 
 
 export default () =>
@@ -289,5 +342,6 @@ export default () =>
         getContentEpic,
         virtualMountEpic,
         virtualListEpic,
-        copySourceIntoSettingsEpic
+        copySourceIntoSettingsEpic,
+        openOutFileEpic
     );

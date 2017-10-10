@@ -27,7 +27,7 @@ const populateTimelineEpic = (
     store: Store<ImgSpyState>
 ) =>
 action$
-    .ofType(actions.CRT_TIMELINE)
+    .ofType(actions.CREATE_TIMELINE)
     .mergeMap((action) => {
         const { imgPath, offset, inode, path } = action.payload;
 
@@ -55,13 +55,13 @@ const activateTimlineEpic = (
 Observable
     .merge(
         /* The a timeline has been created, select it */
-        (action$
-            .ofType(actions.CRT_TIMELINE) as EpicObservable<CrtTimelinePayload>)
+        (action$ as EpicObservable<CrtTimelinePayload>)
+            .ofType(actions.CREATE_TIMELINE)
             .map((action) => selectTimeline(action.payload.path)),
 
-        /* Active item is deleted, select another one of possible */
-        (action$
-            .ofType(actions.DELETE_TIMELINE) as EpicObservable<string>)
+        /* Active item is deleted, select another one if possible */
+        (action$ as EpicObservable<string>)
+            .ofType(actions.DELETE_TIMELINE)
             .filter((action) => {
                 const { timeline } = store.getState();
                 return timeline.selected === action.payload &&

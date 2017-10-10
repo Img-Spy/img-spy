@@ -22,6 +22,7 @@ import { ImgSpyState,
 import { fstToggleOpen,
          fstList,
          fstExport,
+         fstOpenOut,
          openDockPanel,
          activateFile,
          createTimeline,
@@ -39,6 +40,7 @@ interface CaseHierarchyItemActions {
     fstToggleOpen: (selector: FileSelector) => void;
     fstList: (dir: FstDirectory) => void;
     fstExport: (file: FstFile, path: string) => void;
+    fstOpenOut: (file: FstItem) => void;
 
     createTimeline: (data: CrtTimelinePayload) => void;
 
@@ -73,6 +75,7 @@ const mapDispatchToProps: MapDispatchToProps<CaseHierarchyItemProps, InputCaseHi
             fstToggleOpen:  bindActionCreators(fstToggleOpen,   dispatch),
             fstList:        bindActionCreators(fstList,         dispatch),
             fstExport:      bindActionCreators(fstExport,       dispatch),
+            fstOpenOut:     bindActionCreators(fstOpenOut,      dispatch),
 
             createTimeline: bindActionCreators(createTimeline,  dispatch),
             toolsNavigator: bindActionCreators(createNavigator("main.caseApp"),
@@ -108,17 +111,7 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
     private onDoubleClick(ev: React.MouseEvent<any>, item: FstItem) {
         ev.stopPropagation();
 
-        if (item.type !== "file") {
-            return;
-        }
-
-        this.props.actions.openDockPanel({
-            componentName: "FstItemPanel",
-            id: "panel-" + uuidv1(),
-            props: {
-                path: item.path
-            }
-        });
+        this.props.actions.fstOpenOut(item);
     }
 
     private onToogleState(ev: React.MouseEvent<any>, item: FstItem) {
@@ -149,7 +142,15 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
     public componentWillMount() {
         const { item, folder, actions } = this.props;
         this.menu = new remote.Menu();
+        this.menu.append(new remote.MenuItem({
+            label: "Open",
+            enabled: item.address !== "virtual",
+            click: () => actions.fstOpenOut(item)
+        }));
         if (item.type === "file") {
+            this.menu.append(new remote.MenuItem({
+                type: "separator"
+            }));
             this.menu.append(new remote.MenuItem({
                 label: "Export",
                 click: () => {
@@ -167,6 +168,9 @@ export class CaseHierarchyItemClass extends React.Component<CaseHierarchyItemPro
         }
 
         if (item.address === "virtual" && item.type === "directory") {
+            this.menu.append(new remote.MenuItem({
+                type: "separator"
+            }));
             this.menu.append(new remote.MenuItem({
                 label: "Timeline",
                 click: () => {

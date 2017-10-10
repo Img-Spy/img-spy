@@ -188,6 +188,44 @@ $warn:    theme-warn($theme);
     }
 
 }
+@mixin spy-window-case-search() {
+    
+    .search-form {
+        width: calc(100% - 20px);
+
+        > table {
+            width: 100%;
+
+            input {
+                width: calc(100% - 18px);
+            }
+
+            select {
+                width: calc(100% - 8px);
+            }
+        }
+
+        button {
+            float: right;
+            margin-top: 15px;
+        }
+    }
+
+    .search-items {
+        width: 100%;
+        margin: 10px 0px;
+        font-size: 14px;
+
+        .search-item {
+            padding: 5px;
+            cursor: pointer;
+
+            &.selected {
+                background-color: palette-600($palette);
+            }
+        }
+    }
+}
 /*  */
 
 /* Main */
@@ -202,6 +240,7 @@ body.img-spy-case {
     div.case {
         @include spy-window-case-explorer;
         @include spy-window-case-timeline;
+        @include spy-window-case-search;
         @include spy-window-case-terminal;
     }
 }

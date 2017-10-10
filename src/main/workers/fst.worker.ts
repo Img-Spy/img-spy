@@ -99,7 +99,7 @@ export interface SearchImgCallbackMessage {
     id: string;
     type: "searchImgCallback";
     keepAlive: boolean;
-    content: SearchResult;
+    content: SearchResult | "complete";
 }
 
 
@@ -189,6 +189,7 @@ export class FstWorker extends ImgSpyWorker<FstWorkerMessage> {
 
                 cb(content);
                 if (content.finish) {
+                    cb("complete");
                     cb(false);
                 }
             });
@@ -199,9 +200,8 @@ export class FstWorker extends ImgSpyWorker<FstWorkerMessage> {
                 const { cb } = m;
                 const response = <SearchImgCallbackMessage>m.response;
 
-                if (response.keepAlive) {
-                    cb(response.content);
-                } else {
+                cb(response.content);
+                if (!response.keepAlive) {
                     cb(false);
                 }
             });

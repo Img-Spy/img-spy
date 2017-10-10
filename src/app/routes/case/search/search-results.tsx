@@ -5,72 +5,67 @@ import { connect,
          Dispatch,
          MapDispatchToProps,
          MapStateToProps }      from "react-redux";
-import { TimelineItem }         from "tsk-js";
 
 import { ImgSpyState,
          ResizeObservable,
          ResizeSize,
          TableSettings,
-         TimelineInfo }         from "app/models";
-import { ResizePanel }          from "app/components";
-import { updateTimelineTable }  from "app/actions";
+         SearchInfo }           from "app/models";
+import { updateSearchTable }    from "app/actions";
 
-import { TimelineTable }        from "./timeline-table";
-import { TimelineGraph }        from "./timeline-graph";
+import { SearchTable }          from "./search-table";
 
 
-interface InputTimelineResultsProps
+interface InputSearchResultsProps
         extends React.HTMLAttributes<HTMLDivElement> { }
 
-interface TimelineResultsActions {
-    updateTimelineTable: (settings: Partial<TableSettings>) => void;
+interface SearchResultsActions {
+    updateSearchTable: (payload: TableSettings) => void;
 }
 
-interface TimelineResultsMapProps
+interface SearchResultsMapProps
         extends React.HTMLAttributes<HTMLDivElement> {
     dispatch?: Dispatch<any>;
-    actions?: TimelineResultsActions;
+    actions?: SearchResultsActions;
 
-    timeline: TimelineInfo;
+    search: SearchInfo;
     tableSettings: TableSettings;
 }
 
-const mapStateToProps: MapStateToProps<TimelineResultsMapProps,
-                                       InputTimelineResultsProps> =
+const mapStateToProps: MapStateToProps<SearchResultsMapProps,
+                                       InputSearchResultsProps> =
     (state: ImgSpyState, props) => {
-        const { selected, tableSettings } = state.timeline;
-        const { [selected]: timeline } = state.timeline.timelines;
-        const mapProps: TimelineResultsMapProps = { timeline, tableSettings };
+        const { selected, tableSettings } = state.searchView;
+        const { [selected]: search } = state.searchView.searchResults;
+        const mapProps: SearchResultsMapProps = { search, tableSettings };
 
         return mapProps as any;
     };
 
-const mapDispatchToProps: MapDispatchToProps<TimelineResultsMapProps,
-                                             InputTimelineResultsProps> =
+const mapDispatchToProps: MapDispatchToProps<SearchResultsMapProps,
+                                             InputSearchResultsProps> =
     (dispatch, props) => {
-        const actions: TimelineResultsActions = {
-            updateTimelineTable: bindActionCreators(updateTimelineTable,
-                                                    dispatch),
+        const actions: SearchResultsActions = {
+            updateSearchTable: bindActionCreators(updateSearchTable, dispatch),
         };
 
         return { actions } as any;
     };
 
-type TimelineResultsProps = InputTimelineResultsProps & TimelineResultsMapProps;
-export class TimelineResultsClass
-        extends React.Component<TimelineResultsProps, undefined> {
-    public static displayName = "TimelineResults";
+type SearchResultsProps = InputSearchResultsProps & SearchResultsMapProps;
+export class SearchResultsClass
+        extends React.Component<SearchResultsProps, undefined> {
+    public static displayName = "SearchResults";
     public static defaultProps = {
         className: ""
     };
 
     private resizeSubscription: Subscription;
 
-    constructor(props?: TimelineResultsProps, context?: any) {
+    constructor(props?: SearchResultsProps, context?: any) {
         super(props, context);
 
         //
-        this.onBoxAttached = this.onBoxAttached.bind(this);
     }
 
     public onBoxAttached(box: HTMLDivElement) {
@@ -100,13 +95,13 @@ export class TimelineResultsClass
 
                     if (tableSettings.props &&
                             tableSettings.props.pageSize === pageSize) {
-                        actions.updateTimelineTable({
+                        actions.updateSearchTable({
                             rowVerticalPadding: padding
                         });
                         return;
                     }
 
-                    actions.updateTimelineTable({
+                    actions.updateSearchTable({
                         rowVerticalPadding: padding,
                         props: {
                             pageSize,
@@ -118,9 +113,9 @@ export class TimelineResultsClass
     }
 
     public render(): JSX.Element {
-        const { timeline,
+        const { actions,
+                search,
                 tableSettings,
-                actions,
                 className,
                 dispatch,
                 children,
@@ -128,26 +123,20 @@ export class TimelineResultsClass
 
         return (
             <div {...divProps} className={`${className} outer-box margin`}>
-                <style>{`
-                    .ReactTable .rt-th, .ReactTable .rt-td {
-                        padding: ${tableSettings.rowVerticalPadding}px 5px;
+                <div className="box scroll" style={{overflow: "hidden"}}>
+                    { search &&
+                        <SearchTable
+                            search={search}
+                            tableProps={tableSettings.props}
+                        />
                     }
-                `}</style>
-                <div className="box scroll" ref={this.onBoxAttached}
-                    style={{overflow: "hidden"}}>
-                { timeline &&
-                    <TimelineTable
-                        timeline={timeline}
-                        tableProps={tableSettings.props}
-                    />
-                }
                 </div>
             </div>
         );
     }
 }
 
-export const TimelineResults = connect(
+export const SearchResults = connect(
     mapStateToProps,
     mapDispatchToProps
-)(TimelineResultsClass) as React.ComponentClass<InputTimelineResultsProps>;
+)(SearchResultsClass) as React.ComponentClass<InputSearchResultsProps>;

@@ -8,8 +8,9 @@ import { SettingsModel,
 import { SettingsWindowModel }  from "./settings-window.model";
 import { TerminalModel }        from "./terminal.model";
 import { ExplorerModel }        from "./explorer.model";
-import { TimelinesModel }        from "./timeline.model";
+import { TimelinesModel }       from "./timeline.model";
 import { ResizeModelMap }       from "./resize.model";
+import { SearchModel }          from "./search.model";
 
 
 export interface ImgSpyState {
@@ -30,6 +31,7 @@ export interface ImgSpyState {
     fstItem: FstItem;
     explorer: ExplorerModel;
     timeline: TimelinesModel;
+    searchView: SearchModel;
 }
 
 export interface CaseState {

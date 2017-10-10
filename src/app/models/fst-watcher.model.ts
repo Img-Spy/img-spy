@@ -164,6 +164,12 @@ export const getFstChildren =
 export const getMountPoint = (fstDataSource: FstItem): string =>
     crypto.createHash("md5").update(fstDataSource.path).digest("hex");
 
+export const getFullPath =
+    (fstItem: {imgPath: string, path: string}): string => {
+        const { imgPath, path } = fstItem;
+        return `${imgPath}/${path.split("/").slice(1).join("/")}`;
+    };
+
 export const getFstType = (path: string): FstType => {
     if (anymatch("**/*.dd", path)) {
         return "dataSource";

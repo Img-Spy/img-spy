@@ -6,6 +6,7 @@ import fstWatcherEpic               from "./fst-watcher.epic";
 import autoSaveSettingsEpic         from "./auto-save-settings.epic";
 import explorerEpic                 from "./explorer.epic";
 import timelineEpic                 from "./timeline.epic";
+import searchEpic                   from "./search.epic";
 
 const epicMap = {
     "case-selector": () => {
@@ -18,7 +19,8 @@ const epicMap = {
             settingsEpic(),
             autoSaveSettingsEpic(),
             explorerEpic(),
-            timelineEpic()
+            timelineEpic(),
+            searchEpic()
         );
     },
     "settings": () => {

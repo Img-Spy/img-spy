@@ -1,0 +1,2 @@
+
+export type TableSettings = any;

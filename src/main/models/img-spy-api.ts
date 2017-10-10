@@ -12,7 +12,8 @@ import { SettingsModel }        from "app/models";
 import { CONFIG }               from "main/config";
 import { ImgSpyWindowManager }  from "main/windows";
 import { AnalysisInfo,
-         TimelineAnalysis }     from "main/models";
+         TimelineAnalysis,
+         SearchResult }         from "main/models";
 import { FstWorker }            from "main/workers";
 
 import { WindowEvents,
@@ -61,6 +62,10 @@ export class ImgSpyApi {
         this.fstWorker.timelineImage(`${this.windowManager.folder}/${path}`, offset, inode, cb);
     }
 
+    public searchImage(path: string, offset: number, inode: number, needle: string, cb: (result: SearchResult | "complete") => void) {
+        this.fstWorker.searchImage(`${this.windowManager.folder}/${path}`, offset, inode, needle, cb);
+    }
+
     // Handle settings
     public loadSettingsSync(): SettingsModel {
 
@@ -96,6 +101,7 @@ export class ImgSpyApi {
             },
             sources: {},
             timelines: {},
+            searchResults: {},
             theme: "light"
         };
     }
