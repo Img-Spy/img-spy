@@ -58,7 +58,7 @@ const mapDispatchToProps: MapDispatchToProps<FstWatcherProps, undefined> =
 export class FstWatcherClass extends React.Component<FstWatcherProps, undefined> {
     private watcher: chokidar.FSWatcher;
 
-    public render() {
+    public componentWillMount() {
         const { folder, actions } = this.props;
         if (this.watcher) {
             console.warn("Render watcher!!");
@@ -101,7 +101,9 @@ export class FstWatcherClass extends React.Component<FstWatcherProps, undefined>
         });
         this.watcher.on("unlink",    (path: string)       => actions.fstUnlink(path));
         this.watcher.on("unlinkDir", (path: string)       => actions.fstUnlink(path));
+    }
 
+    public render() {
         return null;
     }
 }

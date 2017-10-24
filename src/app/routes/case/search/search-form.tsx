@@ -121,10 +121,13 @@ export class SearchTableClass
                         <table>
                             <tbody>
                                 <tr className="input-box"><td>
-                                    <Control.text model=".needle" required/>
+                                    <Control.text model=".needle"
+                                                  placeholder="Needle"
+                                                  required/>
                                 </td></tr>
                                 <tr className="input-box" title={completePath}><td>
                                     <Control.text model=".imgPath" required
+                                                  placeholder="Search path"
                                                   defaultValue={completePath}
                                                   disabled/>
                                 </td></tr>

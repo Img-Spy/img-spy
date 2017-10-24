@@ -96,6 +96,11 @@ export class TimelineItemClass extends React.Component<TimelineItemProps, undefi
 
         this.menu = new remote.Menu();
         this.menu.append(new remote.MenuItem({
+            label: "Export",
+            click: () => actions.deleteTimeline(timeline.path)
+        }));
+        this.menu.append(new remote.MenuItem({ type: "separator" }));
+        this.menu.append(new remote.MenuItem({
             label: "Delete",
             click: () => actions.deleteTimeline(timeline.path)
         }));
