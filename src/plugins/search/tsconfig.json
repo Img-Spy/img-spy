@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es2018",
+        "baseUrl": "./",
+        "moduleResolution": "node",
+        "declaration": false,
+        "sourceMap": true,
+        "lib": [ "es6", "dom" ],
+        "jsx": "react",
+        "typeRoots": ["node_modules/@types"],
+        "esModuleInterop": true,
+        "paths": {
+            "@private/*": ["./private/*"],
+            "@public/*": ["./public/*"]
+        }
+    }
+}

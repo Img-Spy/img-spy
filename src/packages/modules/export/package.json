@@ -1,0 +1,11 @@
+{
+                        "name": "img-spy-modules-export",
+                        "version": "0.1.0",
+                        "description": "",
+                        "main": "index.js",
+                        "module": "index.js",
+                        "types": "../typings/export/index.d.ts",
+                        "keywords": [],
+                        "author": "",
+                        "license": "ISC"
+                    }

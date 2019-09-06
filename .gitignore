@@ -1,4 +1,14 @@
-node_modules
-.vscode
-dist
+# Cache files
+.cache-loader
+.rpt2_cache
 
+# Node modules
+node_modules
+
+# Ide 
+.vscode
+
+# Built files
+dist
+build
+release

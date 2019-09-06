@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es2018",
+        "rootDir": "./src",
+        "moduleResolution": "node",
+        "declaration": true,
+        "declarationDir": "./typings",
+        "sourceMap": true,
+        "lib": [ "es6", "dom" ],
+        "jsx": "react",
+        "typeRoots": ["../../node_modules/@types"],
+        "noImplicitReturns": true
+    }
+}

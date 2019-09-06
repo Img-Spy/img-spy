@@ -1,0 +1,9 @@
+{
+  "name": "rollup-plugin-silent-circular",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "rollup-pluginutils": "^2.6.0"
+  }
+}

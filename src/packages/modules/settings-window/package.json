@@ -1,0 +1,11 @@
+{
+                        "name": "img-spy-modules-settings-window",
+                        "version": "0.1.0",
+                        "description": "",
+                        "main": "index.js",
+                        "module": "index.js",
+                        "types": "../typings/settings-window/index.d.ts",
+                        "keywords": [],
+                        "author": "",
+                        "license": "ISC"
+                    }

@@ -1,0 +1,12 @@
+{
+  "name": "rollup-plugin-electron",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "electron-connect": "^0.6.3",
+    "rollup-pluginutils": "^2.6.0",
+    "rxjs": "^6.5.2"
+  }
+}

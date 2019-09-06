@@ -1,0 +1,36 @@
+{
+  "name": "img-spy-core",
+  "version": "0.2.0",
+  "description": "",
+  "main": "dist/img-spy-core.js",
+  "module": "dist/img-spy-core.module.js",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "typings": "typings/index.d.ts",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-redux": "^7.0.3",
+    "react-redux-form": "^1.16.13",
+    "redux": "^4.0.1",
+    "redux-actions": "^2.6.5",
+    "redux-observable": "^1.1.0",
+    "rxjs": "^6.5.1",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.8.15",
+    "@types/redux-actions": "^2.6.0",
+    "rollup": "^1.10.1",
+    "rollup-plugin-commonjs": "^9.3.4",
+    "rollup-plugin-node-resolve": "^4.2.3",
+    "rollup-plugin-typescript2": "^0.21.0",
+    "typescript": "^3.4"
+  }
+}

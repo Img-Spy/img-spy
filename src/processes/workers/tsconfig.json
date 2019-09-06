@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "es2018",
+        "baseUrl": "./src",
+        "moduleResolution": "node",
+        "declaration": false,
+        "sourceMap": true,
+        "lib": [ "es6", "dom" ],
+        "jsx": "react",
+        "typeRoots": ["node_modules/@types"],
+        "esModuleInterop": true
+    }
+}

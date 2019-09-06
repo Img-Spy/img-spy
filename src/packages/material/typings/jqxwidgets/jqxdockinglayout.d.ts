@@ -1,0 +1,30 @@
+import * as React from "react";
+export declare const jqx: any;
+export declare class JqxDockingLayout extends React.Component<any, undefined> {
+    private componentSelector;
+    private style;
+    private template;
+    componentDidMount(): void;
+    manageAttributes(): {};
+    createComponent(options: any): void;
+    setOptions(options: any): void;
+    getOptions(): {};
+    on(name: any, callbackFn: any): void;
+    off(name: any): void;
+    contextMenu(arg: any): any;
+    height(arg: any): any;
+    layout(arg: any): any;
+    minGroupHeight(arg: any): any;
+    minGroupWidth(arg: any): any;
+    resizable(arg: any): any;
+    rtl(arg: any): any;
+    theme(arg: any): any;
+    width(arg: any): any;
+    addFloatGroup(width: any, height: any, position: any, panelType: any, title: any, content: any, initContent: any): void;
+    destroy(): void;
+    loadLayout(layout: any): void;
+    refresh(): void;
+    performRender(): void;
+    saveLayout(): any;
+    render(): JSX.Element;
+}
