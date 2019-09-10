@@ -65,16 +65,7 @@ module.exports = {
         resolve(),
         commonjs({
             include: [/node_modules/],
-            extensions: ['.js', '.ts', '.tsx'],
-            namedExports: {
-                // TODO: Check those
-                'src/node_modules/electron/index.js': [
-                    'remote', 'MenuItem', 'ipcRenderer'
-                ],
-                'src/node_modules/@phosphor/widgets/lib/index.js': [
-                    'DockPanel', 'Widget'
-                ]
-            }
+            extensions: ['.js', '.ts', '.tsx']
         }),
         nodeGyp(),
         postcss(),

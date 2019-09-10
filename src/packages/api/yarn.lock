@@ -9,13 +9,6 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@types/electron@^1.6.10":
-  version "1.6.10"
-  resolved "https://registry.yarnpkg.com/@types/electron/-/electron-1.6.10.tgz#7e87888ed3888767cca68e92772c2c8ea46bc873"
-  integrity sha512-MOCVyzIwkBEloreoCVrTV108vSf8fFIJPsGruLCoAoBZdxtnJUqKA4lNonf/2u1twSjAspPEfmEheC+TLm/cMw==
-  dependencies:
-    electron "*"
-
 "@types/estree@0.0.39":
   version "0.0.39"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
@@ -352,19 +345,19 @@ electron-download@^4.1.0:
     semver "^5.4.1"
     sumchecker "^2.0.2"
 
-electron@*, electron@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.0.tgz#d8352e2c9625b3be0112ce0c1bf5c9b6f692557e"
-  integrity sha512-++emIe4vLihiYiAVL+E8DT5vSNVFEIuQCRxA+VfpDRVBcog85UB28vi4ogRmMOK3UffzKdWV6e1jqp3T0KpBoA==
+electron@^4.0.3:
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-4.1.5.tgz#d1873147d5be36ab0c8bb9db3a54297a82ee8fef"
+  integrity sha512-0VZzUd4vZaUeSLdxJI/XMrMnPN7AROjPFZOiNgZZkYRUUEjGHfaSAbCJyxuXtii52KGhzGL0JgW0q5QmQ3ykKQ==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
     extract-zip "^1.0.3"
 
-electron@^4.0.3:
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-4.1.5.tgz#d1873147d5be36ab0c8bb9db3a54297a82ee8fef"
-  integrity sha512-0VZzUd4vZaUeSLdxJI/XMrMnPN7AROjPFZOiNgZZkYRUUEjGHfaSAbCJyxuXtii52KGhzGL0JgW0q5QmQ3ykKQ==
+electron@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.0.tgz#d8352e2c9625b3be0112ce0c1bf5c9b6f692557e"
+  integrity sha512-++emIe4vLihiYiAVL+E8DT5vSNVFEIuQCRxA+VfpDRVBcog85UB28vi4ogRmMOK3UffzKdWV6e1jqp3T0KpBoA==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
@@ -1863,10 +1856,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.2.4:
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.5.tgz#2d2618d10bb566572b8d7aad5180d84257d70a99"
-  integrity sha512-YycBxUb49UUhdNMU5aJ7z5Ej2XGmaIBL0x34vZ82fn3hGvD+bgrMrVDpatgz2f7YxUMJxMkbWxJZeAvDxVe7Vw==
+typescript@^3.4:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.2.tgz#105b0f1934119dde543ac8eb71af3a91009efe54"
+  integrity sha512-lmQ4L+J6mnu3xweP8+rOrUwzmN+MRAj7TgtJtDaXE5PMyX2kCrklhg3rvOsOIfNeAWMQWO2F1GPc1kMD2vLAfw==
 
 union-value@^1.0.0:
   version "1.0.0"

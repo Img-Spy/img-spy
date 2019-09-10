@@ -76,7 +76,7 @@ module.exports = {
             "zlib", "buffer"],
         ...["electron"],
 
-        // TODO: Remove this externals!!
+        // FIXME: Remove this externals!!
         ...["chokidar", "element-resize-detector"]
     ],
     manualChunks: {

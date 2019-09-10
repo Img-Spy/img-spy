@@ -21,11 +21,10 @@ export default (workerBuilder: PluginWorkersBuilder) => {
 
                 img.search(
                     needle,
-                    // TODO: FIX SEARCH TYPINGS!!!! 
-                    (file: any, context, index) => observer.next({
-                        file: file.file,
-                        context: file.context,
-                        index: file.character
+                    (result, index) => observer.next({
+                        file: result.file,
+                        context: result.context,
+                        index: result.character
                     }),
                     opts
                 );

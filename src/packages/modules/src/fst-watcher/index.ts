@@ -1,3 +1,4 @@
+// TODO: Make this module easier to understand
 export const name = "fstRoot";
 export { default as fstWatcherSelectors }   from "./fst-watcher.selectors";
 export { default as fstWatcherActions }     from "./fst-watcher.actions";

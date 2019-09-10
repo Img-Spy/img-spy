@@ -43,8 +43,7 @@ const updatePanel: Reducer<ExplorerModel, DockPanelModel> = (
 
 
 type Payload = FileSelector | string | DockPanelModel;
-// TODO: FIX THIS any
-export default reducerBuilder<ExplorerModel, any>({
+export default reducerBuilder<ExplorerModel, Payload>({
     [types.SELECT_FILE]: selectFile,
     [types.ACTIVATE_FILE]: activateFile,
 

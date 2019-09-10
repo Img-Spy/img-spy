@@ -2,9 +2,9 @@ import { ImgFile }          from "tsk-js";
 
 
 export interface SearchResult {
-    file: ImgFile;
-    context: Buffer;
-    index: number;
+    file: string;
+    context: string;
+    index: string;
 }
 
 export default interface BackgroundMethods {

@@ -64,7 +64,6 @@ export class CaseHierarchyClass
                 fstWatcherSelectors.getFstChildren(fstRoot, parent);
         }
 
-        // TODO: Functionality not working
         switch (event.keyCode) {
             case 37: // Left
             if ((item.type === "directory" || item.type === "dataSource") && 

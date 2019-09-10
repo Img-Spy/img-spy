@@ -177,7 +177,6 @@ var types = {
     CONTENT,
     EXPORT
 };
-//# sourceMappingURL=fst-watcher.types.js.map
 
 const add = (newItem, address) => ({
     type: types.ADD,
@@ -228,7 +227,6 @@ var fstWatcher_actions = {
     content,
     exportFile
 };
-//# sourceMappingURL=fst-watcher.actions.js.map
 
 function updatePath(rootDir, path, buildCurrItem) {
     const spath = path.split("/");
@@ -351,7 +349,6 @@ var utils = {
     openPath,
     insertDataSource
 };
-//# sourceMappingURL=fst-watcher.utils.js.map
 
 function filterDataSourceChange(state$) {
     return pipe(ofType(types.ADD), filter((action) => {
@@ -361,12 +358,10 @@ function filterDataSourceChange(state$) {
         return selectors.getFstItem(state.fstRoot, action.payload.newItem.path);
     }));
 }
-//# sourceMappingURL=filter-data-source-change.js.map
 
 var index = {
     filterDataSourceChange
 };
-//# sourceMappingURL=index.js.map
 
 const dataSourceTypes = {
     DISK: 1,
@@ -375,9 +370,7 @@ const dataSourceTypes = {
 const dataSourceFileActions = {
     MOVE: 1
 };
-//# sourceMappingURL=fst-watcher.models.js.map
 
-// TODO: Make it easier to understand
 const add$1 = (state, action) => {
     const { newItem } = action.payload;
     const address = action.payload.address || "physical";
@@ -455,7 +448,7 @@ const open$1 = (state, action) => {
         }
     };
 };
-const toogleOpen = (state, action) => {
+const toggleOpen$1 = (state, action) => {
     const { path } = action.payload;
     let { address } = action.payload;
     if (!address) {
@@ -487,7 +480,7 @@ var fstWatcher_reducers = reducerBuilder({
     [types.ADD]: add$1,
     [types.UNLINK]: unlink$1,
     [types.OPEN]: open$1,
-    [types.TOGGLE_OPEN]: toogleOpen
+    [types.TOGGLE_OPEN]: toggleOpen$1
 }, (info) => {
     const initialPhysical = {
         name: basename(info.args["folder"]),
@@ -518,10 +511,9 @@ var fstWatcher_reducers = reducerBuilder({
     });
     return initialState;
 });
-//# sourceMappingURL=fst-watcher.reducers.js.map
 
+// TODO: Make this module easier to understand
 const name = "fstRoot";
-//# sourceMappingURL=index.js.map
 
 export default fstWatcher_reducers;
 export { dataSourceFileActions, dataSourceTypes, fstWatcher_actions as fstWatcherActions, index as fstWatcherOperations, selectors as fstWatcherSelectors, types as fstWatcherTypes, utils as fstWatcherUtils, name };

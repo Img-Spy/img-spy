@@ -34,10 +34,13 @@ const devDependencies = Object.keys(package.dependencies).map(key => {
 }, {});
 
 // Sort devDependencies
-package.devDependencies = Object.keys(devDependencies).sort().reduce((prev, curr) => {
+package.devDependencies = Object.keys(devDependencies).reduce((prev, curr) => {
     prev[curr] = devDependencies[curr];
     return prev;
-}, {});
+}, {
+    // Default dependencies
+    "electron-rebuild": "^1.8.6",
+});
 
 // Write new package.json
 fs.writeFileSync(
@@ -46,11 +49,12 @@ fs.writeFileSync(
 );
 
 // Start package installation
+console.log("Running yarn install for whole monorepo");
 spawnSync("yarn", {
     cwd: path.resolve(root, "src"),
-    stdio: "inherit"
+    stdio: "ignore"
 });
 spawnSync("yarn", {
     cwd: path.resolve(root, "dist"),
-    stdio: "inherit"
+    stdio: "ignore"
 });

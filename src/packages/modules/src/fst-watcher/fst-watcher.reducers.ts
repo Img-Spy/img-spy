@@ -13,7 +13,6 @@ import types                    from "./fst-watcher.types";
 import selectors                from "./fst-watcher.selectors";
 
 
-// TODO: Make it easier to understand
 const add: Reducer<FstRoot, FstAddPayload> = (
     state, action
 ) => {
@@ -111,7 +110,7 @@ const open: Reducer<FstRoot, FstUnlinkPayload> = (
     };
 }
 
-const toogleOpen: Reducer<FstRoot, FstUnlinkPayload> = (
+const toggleOpen: Reducer<FstRoot, FstUnlinkPayload> = (
     state, action
 ): FstRoot => {
     const { path } = action.payload;
@@ -151,7 +150,7 @@ export default reducerBuilder<FstRoot, Payload>({
         [types.ADD]: add,
         [types.UNLINK]: unlink,
         [types.OPEN]: open,
-        [types.TOGGLE_OPEN]: toogleOpen
+        [types.TOGGLE_OPEN]: toggleOpen
     }, (info) => {
         const initialPhysical: FstDirectory = {
             name: path.basename(info.args["folder"]),

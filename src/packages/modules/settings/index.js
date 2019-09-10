@@ -2,7 +2,6 @@ import { reducerBuilder } from 'img-spy-core';
 import produce from 'immer';
 
 var settings_selectors = {};
-//# sourceMappingURL=settings.selectors.js.map
 
 const APPLY = "imgspy/settings/APPLY";
 const UPDATE = "imgspy/settings/UPDATE";
@@ -16,7 +15,6 @@ var types = {
     UPDATE_SOURCE,
     DELETE_SOURCE
 };
-//# sourceMappingURL=settings.types.js.map
 
 const applySettings = (payload) => ({
     type: types.APPLY,
@@ -45,10 +43,8 @@ var settings_actions = {
     deleteSource,
     updateTheme
 };
-//# sourceMappingURL=settings.actions.js.map
 
 var settings_utils = {};
-//# sourceMappingURL=settings.utils.js.map
 
 const update = (state, action) => produce(state, draft => {
     Object.assign(draft, action.payload);
@@ -69,10 +65,8 @@ var settings_reducers = reducerBuilder({
     [types.DELETE_SOURCE]: deleteSource$1,
     [types.UPDATE_SOURCE]: updateSource$1
 }, (info) => info.initialSettings);
-//# sourceMappingURL=settings.reducers.js.map
 
 const name = "settings";
-//# sourceMappingURL=index.js.map
 
 export default settings_reducers;
 export { name, settings_actions as settingsActions, settings_selectors as settingsSelectors, types as settingsTypes, settings_utils as settingsUtils };
