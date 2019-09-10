@@ -9,6 +9,10 @@ node_modules
 .vscode
 
 # Built files
-dist
+dist/*
+!dist/imgspy.json
+!dist/package.json
+!dist/yarn.lock
+
 build
 release

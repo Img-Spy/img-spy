@@ -1,0 +1,11 @@
+{
+  "name": "dist",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^3.0.0",
+    "electron": "^6.0.7",
+    "element-resize-detector": "^1.1.15"
+  }
+}
