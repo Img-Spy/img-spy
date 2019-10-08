@@ -14,7 +14,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron": "^5.0.0",
     "img-spy-core": "^0.1.0",
     "react": "^16.8.6",
     "react-redux": "^7.0.3",

@@ -39,6 +39,7 @@ package.devDependencies = Object.keys(devDependencies).reduce((prev, curr) => {
     return prev;
 }, {
     // Default dependencies
+    "electron": "^4.2.9",
     "electron-rebuild": "^1.8.6",
 });
 

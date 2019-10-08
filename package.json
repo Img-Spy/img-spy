@@ -8,88 +8,21 @@
     "preinstall": "node scripts/preinstall",
     "postinstall": "node scripts/postinstall",
     "start": "cross-env NODE_ENV=development ELECTRON_CONNECT=true NODE_OPTIONS=\"--max-old-space-size=4096\" node scripts/start",
-    "dist-linux": "electron-builder build --linux"
-  },
-  "author": {
-    "name": "Fernando Román García",
-    "email": "fernando.roman@upc.edu"
+    "dist-linux": "electron-builder build --linux --project ./dist"
   },
   "license": "MIT",
-  "build": {
-    "productName": "ImgSpy",
-    "appId": "org.imgspy.ImgSpy",
-    "files": [
-      "dist/assets",
-      "dist/fonts",
-      "dist/tsk-js.node",
-      "dist/main.js",
-      "dist/index.html"
-    ],
-    "extraFiles": [
-      {
-        "from": "dist/plugins",
-        "to": "plugins"
-      },
-      {
-        "from": "dist/plugins-available",
-        "to": "plugins-available"
-      },
-      {
-        "from": "imgspy.json",
-        "to": "imgspy.json"
-      }
-    ],
-    "dmg": {
-      "contents": [
-        {
-          "x": 130,
-          "y": 220
-        },
-        {
-          "x": 410,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "win": {
-      "target": [
-        "nsis",
-        "msi"
-      ]
-    },
-    "linux": {
-      "target": [
-        "deb",
-        "rpm",
-        "snap",
-        "AppImage"
-      ],
-      "category": "Development"
-    },
-    "directories": {
-      "buildResources": "resources",
-      "output": "release"
-    },
-    "publish": {
-      "provider": "github",
-      "owner": "img-spy",
-      "private": false
-    }
-  },
   "repository": "https://github.com/Img-Spy/img-spy",
   "dependencies": {
-    "electron-devtools-installer": "^2.2.4",
-    "electron-store": "^3.2.0",
     "yargs": "^13.3.0"
   },
   "devDependencies": {
     "chalk": "^2.4.2",
     "cross-env": "^5.2.0",
+    "electron-builder": "^21.2.0",
     "electron-connect": "^0.6.3",
     "electron-redux-devtools": "^0.3.4",
     "node-sass": "^4.12.0",
+    "rimraf": "^3.0.0",
     "rollup": "^1.10.1",
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-copy": "^3.1.0",
@@ -98,7 +31,6 @@
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-typescript2": "^0.21.0",
-    "typescript": "^3.4",
-    "rimraf": "^3.0.0"
+    "typescript": "^3.4"
   }
 }

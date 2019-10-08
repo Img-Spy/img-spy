@@ -72,10 +72,15 @@ export default reducerBuilder<SearchModel, Payload, SearchSettings>({
     [types.UPDATE]: updateSearch,
     [types.UPDATE_TABLE]: updateSearchTable
 }, info => {
-    const searchResults = info.initialSettings.plugins.search || {};
-    const selected = info.initialSettings.plugins.search ?
-        Object.keys(info.initialSettings.plugins.search)[0] :
-        undefined;
+    const plugins: SearchSettings = info.initialSettings.plugins;
+    let searchResults = {};
+    let selected;
+    if(plugins) {
+        searchResults = plugins.search || {};
+        selected = info.initialSettings.plugins.search ?
+            Object.keys(info.initialSettings.plugins.search)[0] :
+            undefined;
+    }
 
     return { searchResults, selected, tableSettings: {} };
 });

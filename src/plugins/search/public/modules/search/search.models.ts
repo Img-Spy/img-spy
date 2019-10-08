@@ -34,9 +34,10 @@ export interface SearchInfo extends CrtSearchPayload {
     rawItems: Array<SearchItem>;
 }
 
-export interface SearchItem extends ImgFile {
+export interface SearchItem {
+    file: string;
     context: string;
-    index: number;
+    index: string;
 }
 
 export interface SearchModuleState {

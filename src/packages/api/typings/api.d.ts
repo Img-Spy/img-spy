@@ -1,6 +1,8 @@
 import { Observable } from "rxjs";
 import { WorkerInfo, SettingsModel, FunctionMap } from "img-spy-core";
 export declare class ImgSpyApi {
+    private ipcRenderer;
+    constructor();
     saveSettingsSync(settings: SettingsModel): void;
     setFolderSync(folder: string): void;
     closeWindowSync(name: string): void;

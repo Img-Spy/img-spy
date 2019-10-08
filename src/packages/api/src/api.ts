@@ -1,7 +1,7 @@
 import { Observable, 
          Observer }             from "rxjs";
-import { ipcRenderer }          from "electron";
 import uuidv1                   from "uuid/v1";
+import { IpcRenderer }          from "electron";
 
 import { channels,
          WorkerInfo,
@@ -13,24 +13,33 @@ import { channels,
 
 
 export class ImgSpyApi {
+    private ipcRenderer: IpcRenderer;
+
+    constructor() {
+        try {
+            this.ipcRenderer = require("electron").ipcRenderer;
+        } catch(e) {
+            console.warn("Cannot require ipcRenderer: ImgSpyApi may not work.");
+        }
+    }
 
     public saveSettingsSync(settings: SettingsModel): void {
-        return ipcRenderer.sendSync(channels.SAVE_SETTINGS, settings);
+        return this.ipcRenderer.sendSync(channels.SAVE_SETTINGS, settings);
     }
 
     public setFolderSync(folder: string): void {
         console.log("Set folder", folder);
-        return ipcRenderer.sendSync(channels.SET_FOLDER, folder);
+        return this.ipcRenderer.sendSync(channels.SET_FOLDER, folder);
     }
 
 
     public closeWindowSync(name: string): void {
-        return ipcRenderer.sendSync(channels.CLOSE_WINDOW, name);
+        return this.ipcRenderer.sendSync(channels.CLOSE_WINDOW, name);
     }
 
     public loadSettingsSync<T>(): SettingsModel<T> {
         console.log("Send message");
-        return ipcRenderer.sendSync(channels.LOAD_SETTINGS);
+        return this.ipcRenderer.sendSync(channels.LOAD_SETTINGS);
 
         // const settingsDir = this.settingsDirPath;
         // if (!fs.existsSync(settingsDir)) {
@@ -66,7 +75,7 @@ export class ImgSpyApi {
             id, type,
             request: args
         };
-        ipcRenderer.send(channels.WORKER, request);
+        this.ipcRenderer.send(channels.WORKER, request);
 
         return Observable.create((observer: Observer<ReturnType<T[K]>>) => {
             const responseHandler = (e: Event, resp: ApiResponse) => {
@@ -76,17 +85,18 @@ export class ImgSpyApi {
                         observer.error(resp);
                     }
                     observer.complete();
-                    ipcRenderer.removeListener(channels.WORKER_RESPONSE,
+                    this.ipcRenderer.removeListener(channels.WORKER_RESPONSE,
                         responseHandler);
                     return;
                 }
                 observer.next(resp.response);
             };
 
-            ipcRenderer.on(channels.WORKER_RESPONSE, responseHandler);
+            this.ipcRenderer.on(channels.WORKER_RESPONSE, responseHandler);
         });
     }
 }
 
 // export const api: ImgSpyApi = remote.require("./main.js").default;
-export default new ImgSpyApi();
+let imgSpyApi = window ? new ImgSpyApi() : undefined;
+export default imgSpyApi;

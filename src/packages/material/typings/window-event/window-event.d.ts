@@ -7,6 +7,8 @@ interface InputProps {
 }
 export declare class WindowEvent extends React.Component<InputProps> {
     static displayName: string;
+    private ipcRenderer;
+    constructor(props: any, context: any);
     componentWillMount(): void;
     render(): any;
 }

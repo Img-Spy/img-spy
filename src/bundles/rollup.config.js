@@ -17,8 +17,7 @@ module.exports = {
         }
     ],
     external: [
-        ...['fs', 'child_process', 'crypto', 'path'],
-        ...['electron']
+        ...['fs', 'child_process', 'crypto', 'path']
     ],
     plugins: [
         resolve(),

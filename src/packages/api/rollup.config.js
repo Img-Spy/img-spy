@@ -24,9 +24,8 @@ module.exports = {
     ],
     external: [
         ...Object.keys(pkg.dependencies || {}),
-        ...Object.keys(pkg.peerDependencies || {}),
         ...["rxjs/operators", "uuid/v1"],
-        ...["crypto"]
+        ...["crypto"],
     ],
     plugins: [
         typescript({

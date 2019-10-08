@@ -14,6 +14,7 @@ import { ApiQuery,
          finalizeMap, 
          ApiCall,
          api$}                      from "img-spy-api";
+import { fstWatcherSelectors }      from "img-spy-modules/fst-watcher";
 
 import { CrtSearchPayload,
          SearchInfo,
@@ -54,13 +55,16 @@ const populateSearchEpic: ActionEpic<CrtSearchPayload, State> = (
             const { file, context: ctx, index } = response;
             const { rawItems } = acc;
             const context = new Buffer(ctx).toString();
+            // const fileInfo = fstWatcherSelectors.getFstItem(state$.value.fstRoot, file);
             const newItem = {
-                ...file,
+                file,
                 context,
                 index
             };
 
-            rawItems.push(newItem);
+            rawItems.push({
+                file, context, index
+            });
 
             return acc;
         }, { id: action.id, complete: false, rawItems: [] }),

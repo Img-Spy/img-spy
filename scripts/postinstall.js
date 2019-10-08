@@ -15,9 +15,10 @@ Object.keys(package.dependencies).forEach(key => {
     console.log(`    - ${key}`);
     status = spawnSync("yarn", ["link"], {
         cwd: depPath,
-        stdio: "ignore"
+        stdio: ["ignore", "ignore", "ignore"]
     });
     if(status.error) {
+        console.log(status.error.message);
         console.error(`Error while creating the link for "${key}"`);
     }
 

@@ -67,10 +67,15 @@ export default reducerBuilder<TimelinesModel, Payload, TimelineSettings>({
 
     [types.UPDATE_TABLE]: updateTimelineTable
 }, info => {
-    const timelines = info.initialSettings.plugins.timelines || {};
-    const selected = info.initialSettings.plugins.timelines ?
-        Object.keys(info.initialSettings.plugins.timelines)[0] :
-        undefined;
+    const plugins = info.initialSettings.plugins;
+    let timelines = {};
+    let selected;
+    if(plugins) {
+        timelines = plugins.timelines || {};
+        selected = info.initialSettings.plugins.timelines ?
+            Object.keys(info.initialSettings.plugins.timelines)[0] :
+            undefined;
+    }
 
     return { timelines, selected, tableSettings: {} };
 });
