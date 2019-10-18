@@ -73,7 +73,7 @@ module.exports = {
         copy({
             targets: [
                 { src: slash(path.resolve(opts.rootDir, 'src/index.html')), dest: opts.assets },
-                { src: slash(path.resolve(opts.rootDir, 'i18n/languages')), dest: opts.assets },
+                { src: slash(path.resolve(opts.rootDir, 'src/i18n/languages')), dest: opts.assets },
                 { src: slash(path.resolve(opts.rootDir, 'fonts')), dest: opts.distDir },
             ],
             verbose: true
