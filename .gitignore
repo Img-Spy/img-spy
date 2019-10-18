@@ -13,6 +13,6 @@ dist/*
 !dist/imgspy.json
 !dist/package.json
 !dist/yarn.lock
+!dist/build
 
-build
 release

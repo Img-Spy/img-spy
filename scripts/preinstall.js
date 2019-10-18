@@ -5,57 +5,68 @@ const { spawnSync } = require("child_process");
 const package = require("../src/package.json");
 const root = path.resolve(__dirname, "..");
 
+const { execPromise } = require("./lib");
 
-// Merge devDependencies
-const devDependencies = Object.keys(package.dependencies).map(key => {
-    const depPath = path.resolve(
-        root, "src", package.dependencies[key].substring(5)
-    );
 
-    const depPackage = require(`${depPath}/package.json`);
-    return {
-        name: key,
-        devDependencies: depPackage.devDependencies 
-    };
-}).reduce((prev, curr) => {
-    if(!curr.devDependencies) {
-        return prev;
-    }
+const srcPackageJson = () => {
+    const devDependencies = Object.keys(package.dependencies).map(key => {
+        const depPath = path.resolve(
+            root, "src", package.dependencies[key].substring(5)
+        );
 
-    Object.keys(curr.devDependencies).forEach(key => {
-        const currDependency = curr.devDependencies[key]
-        if(prev[key] && prev[key] !== currDependency) {
-            console.log(`Check dev dependencies! They are inconsistent [${curr.name}.${key}:${currDependency}/global.${key}:${prev[key]}]`);
-            process.exit(-1);
+        const depPackage = require(`${depPath}/package.json`);
+        return {
+            name: key,
+            devDependencies: depPackage.devDependencies 
+        };
+    }).reduce((prev, curr) => {
+        if(!curr.devDependencies) {
+            return prev;
         }
-        prev[key] = currDependency;
+
+        Object.keys(curr.devDependencies).forEach(key => {
+            const currDependency = curr.devDependencies[key]
+            if(prev[key] && prev[key] !== currDependency) {
+                console.log(`Check dev dependencies! They are inconsistent [${curr.name}.${key}:${currDependency}/global.${key}:${prev[key]}]`);
+                process.exit(-1);
+            }
+            prev[key] = currDependency;
+        });
+        return prev;
+    }, {});
+
+    // Sort devDependencies
+    package.devDependencies = Object.keys(devDependencies).reduce((prev, curr) => {
+        prev[curr] = devDependencies[curr];
+        return prev;
+    }, {
+        // Default dependencies
+        "electron": "^4.2.9",
+        "electron-rebuild": "^1.8.6",
     });
-    return prev;
-}, {});
 
-// Sort devDependencies
-package.devDependencies = Object.keys(devDependencies).reduce((prev, curr) => {
-    prev[curr] = devDependencies[curr];
-    return prev;
-}, {
-    // Default dependencies
-    "electron": "^4.2.9",
-    "electron-rebuild": "^1.8.6",
-});
+    // Write new package.json
+    fs.writeFileSync(
+        path.resolve(root, "src/package.json"),
+        JSON.stringify(package, null, "  ")
+    );
+}
 
-// Write new package.json
-fs.writeFileSync(
-    path.resolve(root, "src/package.json"),
-    JSON.stringify(package, null, "  ")
-);
 
-// Start package installation
-console.log("Running yarn install for whole monorepo");
-spawnSync("yarn", {
-    cwd: path.resolve(root, "src"),
-    stdio: "ignore"
-});
-spawnSync("yarn", {
-    cwd: path.resolve(root, "dist"),
-    stdio: "ignore"
-});
+const packageInstallation = async () => {
+    // Start package installation
+    console.log("Running yarn install for whole monorepo");
+    console.log("Installing src...");
+    await execPromise("yarn", [], {
+        cwd: path.resolve(root, "src")
+    });
+    console.log("Installing dist...");
+    await execPromise("yarn", [], {
+        cwd: path.resolve(root, "dist")
+    });
+}
+
+!async function main() {
+    srcPackageJson();
+    await packageInstallation();
+}();

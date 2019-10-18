@@ -6,7 +6,7 @@ import { IMG_SCAN_MENU } from "./menu";
 const DEFAULT_OPTIONS: Electron.BrowserWindowConstructorOptions = {
     width: 500,
     height: 105,
-    resizable: false,
+    resizable: true,
     show: false,
     center: true
 };

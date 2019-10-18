@@ -1518,15 +1518,6 @@ electron@^4.2.9:
     electron-download "^4.1.0"
     extract-zip "^1.0.3"
 
-electron@^5.0.0:
-  version "5.0.11"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.11.tgz#764eb460aa84fbfcb3dc30385f5f9509cb724751"
-  integrity sha512-2QVVycTmvMmKC3S9XV7zSvouYBooHRTOBx1r64nBwtMh44gPydR3HzUbyVYjjxsw+4vIuH6AqNuY48KtWRpajg==
-  dependencies:
-    "@types/node" "^10.12.18"
-    electron-download "^4.1.0"
-    extract-zip "^1.0.3"
-
 element-resize-detector@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/element-resize-detector/-/element-resize-detector-1.2.0.tgz#63344fd6f4e5ecff6f018d027e17b281fd4fa338"
@@ -2370,7 +2361,6 @@ img-spy-api@^0.1.0:
 "img-spy-api@file:./packages/api":
   version "0.2.0"
   dependencies:
-    electron "^4.2.9"
     img-spy-core "^0.1.0"
     react "^16.8.6"
     react-redux "^7.0.3"
@@ -2434,7 +2424,6 @@ img-spy-material@^0.1.0:
 "img-spy-material@file:./packages/material":
   version "0.2.0"
   dependencies:
-    electron "^5.0.0"
     img-spy-core "^0.1.0"
     react "^16.8.6"
     react-redux "^7.0.3"
@@ -2512,7 +2501,7 @@ img-spy-navigation@^0.1.0:
     redux-actions "^2.6.5"
     redux-observable "^1.1.0"
     rxjs "^6.0.0"
-    tsk-js "^0.5.0"
+    tsk-js "^0.5.1"
 
 "img-spy-plugin-search@file:./plugins/search":
   version "0.2.0"
@@ -2528,7 +2517,7 @@ img-spy-navigation@^0.1.0:
     redux-actions "^2.2.1"
     redux-observable "^1.0.0"
     rxjs "^6.0.0"
-    tsk-js "^0.5.0"
+    tsk-js "^0.5.1"
 
 "img-spy-plugin-timeline@file:./plugins/timeline":
   version "0.2.0"
@@ -2543,7 +2532,7 @@ img-spy-navigation@^0.1.0:
     redux-actions "^2.2.1"
     redux-observable "^1.0.0"
     rxjs "^6.0.0"
-    tsk-js "^0.5.0"
+    tsk-js "^0.5.1"
 
 img-spy-resize@^0.1.0:
   version "0.1.0"
@@ -5650,10 +5639,10 @@ trim-newlines@^1.0.0:
   dependencies:
     glob "^7.1.2"
 
-tsk-js@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/tsk-js/-/tsk-js-0.5.0.tgz#15ebf22e9fbff9f906d4807b390c1d4963c306bc"
-  integrity sha512-YODWoMFIIascMQx/yDFCrpzzWFWdizQTqstNEY7hwu90sTROZYchiUcMMhpnAPn4nQoXNjV2nEvMkPrGTlaEJQ==
+tsk-js@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/tsk-js/-/tsk-js-0.5.1.tgz#1af39edd9db2fb6c9cdef8ea13051d76623f31fa"
+  integrity sha512-D2/YpMIIIRI+ppnbw1keRYomT8T2IYwDvA1gwhO/gzkuidSfzRGWFh/NkaZNtlwM/ISLgIpyRXkjKESHzlv6Gg==
   dependencies:
     extract-zip "^1.6.7"
     ncp "^2.0.0"

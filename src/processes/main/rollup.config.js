@@ -10,13 +10,15 @@ const pkg = require('./package.json');
 
 const opts = {
     rootDir: __dirname,
+    distDir: process.env.IMGSPY_MAIN_PATH ||
+        path.resolve(__dirname, "dist"),
     globalSrc: path.resolve(__dirname, "../..")
 }
 
 module.exports = {
     input: path.resolve(opts.rootDir, './src/main.ts'),
     output: {
-        dir: path.resolve(opts.rootDir, 'dist'),
+        dir: opts.distDir,
         sourceMap: true,
         format: 'cjs',
         assetFileNames: 'assets/[name].[hash][extname]',

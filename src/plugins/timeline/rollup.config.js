@@ -1,4 +1,5 @@
 const path = require('path');
+const slash = require('slash');
 
 const typescript = require('rollup-plugin-typescript2');
 const resolve = require('rollup-plugin-node-resolve');
@@ -14,12 +15,16 @@ const { imgSpyBundleModules } = require('img-spy-core/bundles');
 
 const pkg = require('./package.json');
 
-const opts = {
-    rootDir: __dirname,
-    dist: path.resolve(__dirname, "dist/assets/plugins/timeline"),
-    globalSrc: path.resolve(__dirname, "../..")
-};
+const opts = new function Options() {
+    this.rootDir = __dirname;
+    this.pluginsDir = process.env.IMGSPY_PLUGINS_PATH ||
+        path.resolve(this.rootDir, 'dist');
+    this.tskDir = process.env.IMGSPY_TSK_PATH ||
+        path.resolve(this.rootDir, 'node_modules/tsk-js/');
 
+    this.distDir = path.resolve(this.pluginsDir, "timeline");
+    this.binDir = path.resolve(this.distDir, "bin");
+}();
 
 module.exports = {
     input: {
@@ -27,7 +32,7 @@ module.exports = {
         "timeline-workers": path.resolve(opts.rootDir, './private/workers/index.ts')
     },
     output: {
-        dir: opts.dist,
+        dir: opts.distDir,
         sourcemap: true,
         format: 'cjs',
         banner: `(function() {`,
@@ -48,8 +53,11 @@ module.exports = {
         }),
         copy({
             targets: [
-                { src: path.resolve(opts.rootDir, "package.json"), dest: opts.dist }
-            ],
+                { src: slash(path.resolve(opts.rootDir, "package.json")), dest: opts.distDir },
+                process.platform !== "win32" ? undefined :
+                    { src: slash(path.resolve(opts.tskDir, 'build/Release/*.dll')), dest: opts.binDir }
+            ].filter((target) => !!target),
+            verbose: true
         }),
         replace({
             exclude: 'node_modules/**',

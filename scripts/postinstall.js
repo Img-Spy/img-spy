@@ -5,33 +5,57 @@ const rimraf = require("rimraf");
 const package = require("../src/package.json");
 const root = path.resolve(__dirname, "..");
 
-console.log(`Prepare dependencies`);
-Object.keys(package.dependencies).forEach(key => {
-    const depPath = path.resolve(
-        root, "src", package.dependencies[key].substring(5)
-    );
-    let status;
+const { symlinkPromise, execPromise } = require("./lib");
 
-    console.log(`    - ${key}`);
-    status = spawnSync("yarn", ["link"], {
-        cwd: depPath,
-        stdio: ["ignore", "ignore", "ignore"]
-    });
-    if(status.error) {
-        console.log(status.error.message);
-        console.error(`Error while creating the link for "${key}"`);
+
+const prepareDependencies = async () => {
+    console.log(`Prepare dependencies`);
+    for(key in package.dependencies) {
+        const srcPath = path.resolve(
+            root, "src"
+        );
+        const depPath = path.resolve(
+            srcPath, package.dependencies[key].substring(5)
+        );
+        const depLinkPath = path.resolve(
+            root, "src/node_modules", key
+        );
+        const depPackagePath = path.resolve(
+            depPath, "package.json"
+        );
+        const depPackage = require(depPackagePath);
+
+        console.log(`    - ${key}`);
+        rimraf.sync(depLinkPath);
+        await execPromise("yarn", ["link"], {
+            cwd: depPath
+        });
+        await execPromise("yarn", ["link", key], {
+            cwd: srcPath
+        });
+        // await symlinkPromise(depPath, depLinkPath).catch(err => {
+        //     console.error(err.stack);
+        //     process.exit(-1);
+        // });
+        if(depPackage.scripts && depPackage.scripts.prepare) {
+            await execPromise("yarn", ["prepare"], {
+                cwd: depPath
+            });
+        }
+
+        rimraf.sync(path.resolve(depPath, 'node_modules'));
     }
+};
 
-    spawnSync("yarn", ["link", key], {
-        cwd: path.resolve(root, "src"),
-        stdio: "ignore"
+const rebuild = async () => {    
+    console.log(`Rebuild binaries to match electron node version`);
+    await execPromise("yarn", ["rebuild"], {
+        cwd: path.resolve(root, "src")
     });
+}
 
-    rimraf.sync(path.resolve(depPath, 'node_modules'));
-});
 
-console.log(`Rebuild binaries to match electron node version`);
-spawnSync("yarn", ["rebuild"], {
-    cwd: path.resolve(root, "src"),
-    stdio: "inherit"
-});
+!async function main() {
+    await prepareDependencies();
+    await rebuild();
+}()

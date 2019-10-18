@@ -8,6 +8,7 @@
     "email": "fernando.roman@upc.edu"
   },
   "repository": "https://github.com/Img-Spy/img-spy",
+  "description": "A digital forensics application",
   "build": {
     "productName": "ImgSpy",
     "appId": "org.imgspy.ImgSpy",

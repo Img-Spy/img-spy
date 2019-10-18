@@ -1,14 +1,15 @@
 {
   "name": "img-spy",
   "version": "0.2.0",
-  "description": "A test for using electron",
+  "description": "A digital forensics application",
   "main": "dist/main.js",
   "scripts": {
     "version": "node scripts/version",
     "preinstall": "node scripts/preinstall",
     "postinstall": "node scripts/postinstall",
     "start": "cross-env NODE_ENV=development ELECTRON_CONNECT=true NODE_OPTIONS=\"--max-old-space-size=4096\" node scripts/start",
-    "dist-linux": "electron-builder build --linux --project ./dist"
+    "dist-linux": "electron-builder build --linux --project ./dist",
+    "dist-win": "electron-builder build --win --project ./dist"
   },
   "license": "MIT",
   "repository": "https://github.com/Img-Spy/img-spy",

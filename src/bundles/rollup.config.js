@@ -4,14 +4,15 @@ const silentCircular = require('rollup-plugin-silent-circular');
 const path = require('path');
 
 const opts = {
-    root: __dirname
+    rootPath: __dirname,
+    distFile: process.env.IMGSPY_BUNDLE_FILE || __dirname
 };
 
 module.exports = {
-    input: path.resolve(opts.root, 'img-spy-bundle.js'),
+    input: path.resolve(opts.rootPath, 'img-spy-bundle.js'),
     output: [
         {
-            file: 'dist/assets/js/img-spy.js',
+            file: opts.distFile,
             sourcemap: true,
             format: 'cjs'
         }

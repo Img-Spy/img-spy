@@ -7,11 +7,12 @@ const electron = require('rollup-plugin-electron');
 const path = require('path');
 const pkg = require('./package.json');
 
-const opts = {
-    rootDir: __dirname,
-    dist: path.resolve(__dirname, "dist/assets"),
-    globalSrc: path.resolve(__dirname, "../..")
-};
+const opts = new function Options() {
+    this.rootDir = __dirname;
+    this.distDir = process.env.IMGSPY_WORKERS_PATH ||
+        path.resolve(this.rootDir, "dist");
+    this.globalSrc = path.resolve(this.rootDir, "../..");
+}();
 
 
 module.exports = {
@@ -19,12 +20,12 @@ module.exports = {
         'workers': path.resolve(opts.rootDir, './src/child-process.entry.ts')
     },
     output: {
-        dir: opts.dist,
+        dir: opts.distDir,
         sourcemap: true,
         format: 'cjs',
         banner: `(function() {`,
         footer: `})()`,
-        entryFileNames: 'js/[name].js',
+        entryFileNames: '[name].js',
         assetFileNames: '[name].[hash][extname]',
         chunkFileNames: '[name].js',
     },

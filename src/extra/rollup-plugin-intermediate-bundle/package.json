@@ -8,7 +8,7 @@
   "module": "dist/rollup-plugin-intermediate-bundle.es.js",
   "jsnext:main": "dist/rollup-plugin-intermediate-bundle.es.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "npx rollup -c",
     "test": "mocha test/test.js",
     "pretest": "npm run build",
     "prepublishOnly": "npm run lint && rm -rf dist && npm test",

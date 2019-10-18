@@ -1,4 +1,5 @@
 const path = require('path');
+const slash = require('slash');
 
 const typescript = require('rollup-plugin-typescript2');
 const resolve = require('rollup-plugin-node-resolve');
@@ -14,44 +15,12 @@ const { imgSpyBundleModules } = require('img-spy-core/bundles');
 
 const pkg = require('./package.json');
 
-const opts = {
-    rootDir: __dirname,
-    assets: path.resolve(__dirname, "dist/assets"),
-    dist: path.resolve(__dirname, "dist"),
-    globalSrc: path.resolve(__dirname, "../..")
-};
-
-
-// const namedExports = [
-//     ...['processes/ui'],
-//     ...['api',
-//         'core',
-//         'material',
-//         'modules',
-//         'navigation',
-//         'resize'
-//     ].map(package => `packages/${package}`),
-// ].map((name) => {
-//     const namedExport = {};
-//     namedExport[`src/${name}/node_modules/react/index.js`] = [
-//         'useLayoutEffect', 'useEffect', 'useMemo', 'useContext', 'useReducer',
-//         'useRef',
-
-//         'Component', 'Children', 'PureComponent', 'PropTypes',
-//         'createElement', 'Fragment', 'cloneElement', 'StrictMode',
-//         'createFactory', 'createRef', 'createContext',
-//         'isValidElement', 'isValidElementType',
-//     ];
-//     namedExport[`src/${name}/node_modules/react-is/index.js`] = [
-//         'isValidElementType','isContextConsumer'
-//     ];
-//     namedExport[`src/${name}/node_modules/react-dom/index.js`] = [
-//         'unstable_batchedUpdates',
-//         'render', 'hydrate',
-//     ];
-
-//     return namedExport;
-// }).reduce((prev, curr) => Object.assign(prev, curr), {});
+const opts = new function Options() {
+    this.rootDir = __dirname;
+    this.distDir = process.env.IMGSPY_UI_PATH ||
+        path.resolve(this.rootDir, "dist");
+    this.assets = path.resolve(this.distDir, "assets");
+}();
 
 
 module.exports = {
@@ -103,19 +72,18 @@ module.exports = {
         }),
         copy({
             targets: [
-                { src: path.resolve(opts.rootDir, 'src/index.html'), dest: opts.assets },
-                { src: path.resolve(opts.rootDir, 'src/i18n/languages'), dest: opts.assets },
-                { src: path.resolve(opts.rootDir, 'fonts'), dest: opts.dist },
+                { src: slash(path.resolve(opts.rootDir, 'src/index.html')), dest: opts.assets },
+                { src: slash(path.resolve(opts.rootDir, 'i18n/languages')), dest: opts.assets },
+                { src: slash(path.resolve(opts.rootDir, 'fonts')), dest: opts.distDir },
             ],
+            verbose: true
         }),
         typescript({
             typescript: require('typescript'),
             objectHashIgnoreUnknownHack: true,
             tsconfig: path.resolve(opts.rootDir, 'tsconfig.json')
         }),
-        resolve({
-            jail: opts.globalSrc
-        }),
+        resolve(),
         commonjs({
             include: [/node_modules/],
             extensions: ['.js', '.ts', '.tsx'],

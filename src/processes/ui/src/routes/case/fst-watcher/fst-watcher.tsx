@@ -37,8 +37,16 @@ type FstWatcherProps = InputProps & StateProps & DispatchProps;
 export class FstWatcherClass extends React.Component<FstWatcherProps> {
     private watcher: chokidar.FSWatcher;
 
-    private addDirectory(dirPath: string, info) {
+    private fixPath(inputPath: string) {
+        if(process.platform === "win32") {
+            return inputPath.replace("\\", "/");
+        }
+        return inputPath;
+    }
+
+    private addDirectory(inputPath: string, info) {
         const { folder, actions } = this.props;
+        const dirPath = this.fixPath(inputPath);
         const name = path.basename(dirPath ? dirPath : folder);
         const dir: FstDirectory = {
             name,
@@ -52,8 +60,9 @@ export class FstWatcherClass extends React.Component<FstWatcherProps> {
         actions.fstAdd(dir);
     }
 
-    private addFile(filePath: string, info) {
+    private addFile(inputPath: string, info) {
         const { actions } = this.props;
+        const filePath = this.fixPath(inputPath);
         const name = path.basename(filePath);
         const type = fstWatcherSelectors.getFstType(filePath); 
         const item: Partial<FstItem> = {
@@ -71,8 +80,9 @@ export class FstWatcherClass extends React.Component<FstWatcherProps> {
         actions.fstAdd(item);
     }
 
-    private changeFile(filePath: string, info) {
+    private changeFile(inputPath: string, info) {
         const { actions } = this.props;
+        const filePath = this.fixPath(inputPath);
         const name = path.basename(filePath);
         const item:  Partial<FstItem> = {
             path: `${filePath}`,
@@ -93,7 +103,8 @@ export class FstWatcherClass extends React.Component<FstWatcherProps> {
 
         this.watcher = chokidar
             .watch(folder, {
-                ignored: (path: string) => {
+                ignored: (inputPath: string) => {
+                    const path = this.fixPath(inputPath);
                     return anymatch([`${folder}/.settings`, `${folder}/.mount`], path);
                 },
                 persistent: true,

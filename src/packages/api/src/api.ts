@@ -98,5 +98,5 @@ export class ImgSpyApi {
 }
 
 // export const api: ImgSpyApi = remote.require("./main.js").default;
-let imgSpyApi = window ? new ImgSpyApi() : undefined;
+let imgSpyApi = (typeof window !== "undefined") ? new ImgSpyApi() : undefined;
 export default imgSpyApi;
